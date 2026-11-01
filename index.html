@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V2Ray Lists - Telegram Mini App</title>
-    <!-- Подключение Telegram WebApp SDK -->
+    <title>V2Ray Lists - Бесплатные VPN конфигурации и MTProxy</title>
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -14,49 +14,106 @@
             --text-muted: #94a3b8;
             --accent: var(--tg-theme-button-color, #38bdf8);
             --accent-text: var(--tg-theme-button-text-color, #0f172a);
+            --border-color: #334155;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 1rem;
+            padding: 0;
             line-height: 1.5;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        h1 {
-            font-size: 1.5rem;
-            text-align: center;
+        header a.logo {
             color: var(--accent);
-            margin-bottom: 0.25rem;
-        }
-        p.subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-        .section-title {
+            text-decoration: none;
+            font-weight: bold;
             font-size: 1.1rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 0.25rem;
-            font-weight: 600;
+        }
+        header nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 0.75rem;
+            font-size: 0.85rem;
+        }
+        header nav a:hover {
+            color: var(--accent);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .hero {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        .hero h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+        .hero p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        .step-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .step-card h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        .step-card p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        section {
+            margin-bottom: 2.5rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+            margin-bottom: 1rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
         }
         .card {
             background-color: var(--card-bg);
-            border: 1px solid #334155;
+            border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             padding: 1rem;
-            margin-bottom: 0.75rem;
         }
         .card h3 {
-            margin: 0 0 0.25rem 0;
-            font-size: 1rem;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.05rem;
         }
         .card p {
             margin: 0 0 0.75rem 0;
@@ -72,59 +129,167 @@
             padding: 0.6rem;
             border-radius: 0.35rem;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             text-align: center;
             cursor: pointer;
             text-decoration: none;
             box-sizing: border-box;
+            margin-top: 0.5rem;
         }
         .btn:hover {
             opacity: 0.9;
         }
+        ol {
+            margin: 0 0 0.75rem 0;
+            padding-left: 1.2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        ol li {
+            margin-bottom: 0.25rem;
+        }
         footer {
             text-align: center;
-            margin-top: 2rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+        }
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>V2Ray Lists</h1>
-        <p class="subtitle">Бесплатные VPN конфигурации</p>
+    <header>
+        <a href="#top" class="logo">V2Ray Lists</a>
+        <nav>
+            <a href="#subs">Конфиги</a>
+            <a href="#guides">Гайды</a>
+            <a href="#proxy">Прокси</a>
+        </nav>
+    </header>
 
-        <div class="section-title">Конфигурации подписок</div>
-        
-        <div class="card">
-            <h3>BLACK_FULL</h3>
-            <p>Полный набор серверов для максимальной скорости.</p>
-            <button class="btn" onclick="copyConfig('https://example.com/black_full.txt')">Копировать ссылку</button>
+    <div class="container" id="top">
+        <section class="hero">
+            <h1>Бесплатные VPN конфигурации и MTProxy</h1>
+            <p>Подписки V2Ray, гайды по клиентам и прокси для Telegram. Выбери конфиг, подключись и обходи блокировки :)</p>
+        </section>
+
+        <!-- Инструкция -->
+        <div class="steps">
+            <div class="step-card">
+                <h3>Скопируй</h3>
+                <p>Скопируй ссылку на подписку одним нажатием.</p>
+            </div>
+            <div class="step-card">
+                <h3>Вставь</h3>
+                <p>Открой VPN-клиент и добавь подписку.</p>
+            </div>
+            <div class="step-card">
+                <h3>Подключись</h3>
+                <p>Выбери быстрый сервер и запусти VPN.</p>
+            </div>
         </div>
 
-        <div class="card">
-            <h3>BLACK_LTE</h3>
-            <p>Конфигурации для мобильного интернета.</p>
-            <button class="btn" onclick="copyConfig('https://example.com/black_lte.txt')">Копировать ссылку</button>
-        </div>
+        <!-- Конфиги -->
+        <section id="subs">
+            <h2>V2Ray конфиги</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>BLACK_FULL</h3>
+                    <p>Полный набор серверов для максимальной производительности.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_full.txt')">Копировать ссылку</button>
+                </div>
+                <div class="card">
+                    <h3>BLACK_LTE</h3>
+                    <p>Оптимизированные конфигурации для мобильного интернета.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_lte.txt')">Копировать ссылку</button>
+                </div>
+                <div class="card">
+                    <h3>WHITE_FULL</h3>
+                    <p>Альтернативная база серверов повышенной стабильности.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_full.txt')">Копировать ссылку</button>
+                </div>
+                <div class="card">
+                    <h3>WHITE_LITE</h3>
+                    <p>Легкая версия конфигураций для слабого соединения.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_lite.txt')">Копировать ссылку</button>
+                </div>
+            </div>
+        </section>
 
-        <div class="card">
-            <h3>WHITE_FULL</h3>
-            <p>Альтернативный пул стабильных серверов.</p>
-            <button class="btn" onclick="copyConfig('https://example.com/white_full.txt')">Копировать ссылку</button>
-        </div>
+        <!-- Гайды -->
+        <section id="guides">
+            <h2>Гайды на клиенты</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>v2rayNG (Android)</h3>
+                    <p>Универсальный клиент для Android устройств[span_1](start_span)[span_1](end_span).</p>
+                    <ol>
+                        <li>Установите и откройте v2rayNG[span_2](start_span)[span_2](end_span).</li>
+                        <li>Скопируйте ссылку на конфиг выше[span_3](start_span)[span_3](end_span).</li>
+                        <li>Нажмите + -> Импорт из буфера обмена[span_4](start_span)[span_4](end_span).</li>
+                        <li>Проверьте задержку и подключитесь[span_5](start_span)[span_5](end_span).</li>
+                    </ol>
+                    <a href="https://github.com/2dust/v2rayNG/releases/download/2.3.2/v2rayNG_2.3.2-universal.apk" class="btn" target="_blank">Скачать v2rayNG</a>[span_6](start_span)[span_6](end_span)
+                </div>
+                <div class="card">
+                    <h3>Throne (Windows / Linux)</h3>
+                    <p>Современный десктопный клиент с TUN-режимом[span_7](start_span)[span_7](end_span).</p>
+                    <ol>
+                        <li>Скачайте и установите Throne[span_8](start_span)[span_8](end_span).</li>
+                        <li>Добавьте профиль из буфера обмена[span_9](start_span)[span_9](end_span).</li>
+                        <li>Включите режим TUN[span_10](start_span)[span_10](end_span).</li>
+                        <li>Выберите сервер с наименьшим пингом[span_11](start_span)[span_11](end_span).</li>
+                    </ol>
+                    <a href="https://github.com/throneproj/Throne/releases/download/1.2.2/Throne-1.2.2-windows64.zip" class="btn" target="_blank">Скачать Throne</a>[span_12](start_span)[span_12](end_span)
+                </div>
+                <div class="card">
+                    <h3>Streisand (iOS / macOS)</h3>
+                    <p>Клиент для экосистемы Apple[span_13](start_span)[span_13](end_span).</p>
+                    <ol>
+                        <li>Установите Streisand из App Store[span_14](start_span)[span_14](end_span).</li>
+                        <li>Импортируйте подписку из буфера обмена[span_15](start_span)[span_15](end_span).</li>
+                        <li>Выберите сервер и включите тумблер[span_16](start_span)[span_16](end_span).</li>
+                    </ol>
+                    <a href="https://apps.apple.com/us/app/streisand/id6450534064" class="btn" target="_blank">Открыть App Store</a>[span_17](start_span)[span_17](end_span)
+                </div>
+                <div class="card">
+                    <h3>Hiddify (macOS / Desktop)</h3>
+                    <p>Многофункциональный клиент с гибкой маршрутизацией[span_18](start_span)[span_18](end_span).</p>
+                    <ol>
+                        <li>Установите Hiddify[span_19](start_span)[span_19](end_span).</li>
+                        <li>Добавьте новый профиль из буфера обмена[span_20](start_span)[span_20](end_span).</li>
+                        <li>Включите VPN-сервис[span_21](start_span)[span_21](end_span).</li>
+                    </ol>
+                    <a href="https://github.com/hiddify/hiddify-app/releases/download/latest/Hiddify-MacOS.dmg" class="btn" target="_blank">Скачать Hiddify</a>[span_22](start_span)[span_22](end_span)
+                </div>
+            </div>
+        </section>
 
-        <div class="section-title">Клиенты</div>
-
-        <div class="card">
-            <h3>v2rayNG (Android)</h3>
-            <p>Универсальный клиент под Android устройства.</p>
-            <a href="https://github.com/2dust/v2rayNG/releases/download/2.3.2/v2rayNG_2.3.2-universal.apk" class="btn" target="_blank">Скачать APK</a>
-        </div>
+        <!-- Прокси для Telegram -->
+        <section id="proxy">
+            <h2>Прокси для Telegram</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>BLACKLIST Proxy</h3>
+                    <p>Списки защищенных прокси для стабильного соединения[span_23](start_span)[span_23](end_span).</p>
+                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Скопировать прокси</button>
+                </div>
+                <div class="card">
+                    <h3>WHITELIST Proxy</h3>
+                    <p>Альтернативные каналы связи для мессенджера[span_24](start_span)[span_24](end_span).</p>
+                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Скопировать прокси</button>
+                </div>
+            </div>
+        </section>
 
         <footer>
-            V2Ray Lists Mini App :)
+            <div>Разработчик: <a href="https://github.com/FLAT447" target="_blank">FLAT447</a></div>[span_25](start_span)[span_25](end_span)
+            <div style="margin-top: 0.25rem;">Исходный код: <a href="https://github.com/FLAT447/v2ray-lists-site" target="_blank">GitHub Repository</a></div>[span_26](start_span)[span_26](end_span)
         </footer>
     </div>
 
@@ -136,7 +301,7 @@
         function copyConfig(url) {
             navigator.clipboard.writeText(url).then(() => {
                 if (window.Telegram.WebApp && window.Telegram.WebApp.showAlert) {
-                    window.Telegram.WebApp.showAlert('Ссылка на подписку успешно скопирована :)');
+                    window.Telegram.WebApp.showAlert('Ссылка успешно скопирована :)');
                 } else {
                     alert('Ссылка скопирована: ' + url);
                 }
