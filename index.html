@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Ray Lists - Telegram Mini App</title>
+    <!-- Подключение Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #0f172a);
+            --card-bg: var(--tg-theme-secondary-bg-color, #1e293b);
+            --text-color: var(--tg-theme-text-color, #f8fafc);
+            --text-muted: #94a3b8;
+            --accent: var(--tg-theme-button-color, #38bdf8);
+            --accent-text: var(--tg-theme-button-text-color, #0f172a);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1rem;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.25rem;
+            font-weight: 600;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .card h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+        .card p {
+            margin: 0 0 0.75rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            background-color: var(--accent);
+            color: var(--accent-text);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 0.35rem;
+            font-weight: bold;
+            font-size: 0.95rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>V2Ray Lists</h1>
+        <p class="subtitle">Бесплатные VPN конфигурации</p>
+
+        <div class="section-title">Конфигурации подписок</div>
+        
+        <div class="card">
+            <h3>BLACK_FULL</h3>
+            <p>Полный набор серверов для максимальной скорости.</p>
+            <button class="btn" onclick="copyConfig('https://example.com/black_full.txt')">Копировать ссылку</button>
+        </div>
+
+        <div class="card">
+            <h3>BLACK_LTE</h3>
+            <p>Конфигурации для мобильного интернета.</p>
+            <button class="btn" onclick="copyConfig('https://example.com/black_lte.txt')">Копировать ссылку</button>
+        </div>
+
+        <div class="card">
+            <h3>WHITE_FULL</h3>
+            <p>Альтернативный пул стабильных серверов.</p>
+            <button class="btn" onclick="copyConfig('https://example.com/white_full.txt')">Копировать ссылку</button>
+        </div>
+
+        <div class="section-title">Клиенты</div>
+
+        <div class="card">
+            <h3>v2rayNG (Android)</h3>
+            <p>Универсальный клиент под Android устройства.</p>
+            <a href="https://github.com/2dust/v2rayNG/releases/download/2.3.2/v2rayNG_2.3.2-universal.apk" class="btn" target="_blank">Скачать APK</a>
+        </div>
+
+        <footer>
+            V2Ray Lists Mini App :)
+        </footer>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+
+        function copyConfig(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                if (window.Telegram.WebApp && window.Telegram.WebApp.showAlert) {
+                    window.Telegram.WebApp.showAlert('Ссылка на подписку успешно скопирована :)');
+                } else {
+                    alert('Ссылка скопирована: ' + url);
+                }
+            }).catch(err => {
+                console.error('Ошибка копирования: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
