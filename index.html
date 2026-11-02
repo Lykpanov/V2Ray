@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V2Ray Lists - Бесплатные VPN конфигурации</title>
+    <title>V2Ray Lists - Бесплатные VPN конфигурации и прокси</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -53,10 +53,15 @@
             letter-spacing: -0.5px;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
         nav a {
             color: var(--text-muted);
             text-decoration: none;
-            margin-left: 1rem;
             font-size: 0.85rem;
             font-weight: 500;
             transition: color 0.2s;
@@ -64,6 +69,25 @@
 
         nav a:hover {
             color: var(--accent);
+        }
+
+        .tg-icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: var(--accent);
+            color: var(--accent-text);
+            border-radius: 50%;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+        }
+
+        .tg-icon-btn:hover {
+            opacity: 0.9;
         }
 
         .container {
@@ -130,9 +154,6 @@
             margin-bottom: 1rem;
             font-weight: 600;
             letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .grid {
@@ -153,16 +174,10 @@
             border-color: rgba(14, 165, 233, 0.3);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.35rem;
-        }
-
         .card h3 {
             font-size: 1.05rem;
             font-weight: 600;
+            margin-bottom: 0.35rem;
         }
 
         .card p {
@@ -235,11 +250,14 @@
 
     <header>
         <a href="#top" class="logo">V2Ray Lists</a>
-        <nav>
-            <a href="#subs">Конфиги</a>
-            <a href="#guides">Гайды</a>
-            <a href="#proxy">Прокси</a>
-        </nav>
+        <div class="header-right">
+            <nav style="display: flex; gap: 0.75rem;">
+                <a href="#subs">Конфиги</a>
+                <a href="#guides">Гайды</a>
+                <a href="#proxy">Прокси</a>
+            </nav>
+            <a href="https://t.me/ria_glavnoe" class="tg-icon-btn" target="_blank" title="Telegram канал">ТГ</a>
+        </div>
     </header>
 
     <div class="container" id="top">
@@ -269,30 +287,22 @@
             <h2>V2Ray Конфигурации</h2>
             <div class="grid">
                 <div class="card">
-                    <div class="card-header">
-                        <h3>BLACK_FULL</h3>
-                    </div>
+                    <h3>BLACK_FULL</h3>
                     <p>Максимальный набор серверов для бескомпромиссной производительности.</p>
                     <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_full.txt')">Копировать ссылку подписки</button>
                 </div>
                 <div class="card">
-                    <div class="card-header">
-                        <h3>BLACK_LTE</h3>
-                    </div>
+                    <h3>BLACK_LTE</h3>
                     <p>Оптимизированные конфигурации специально для мобильного интернета.</p>
                     <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_lte.txt')">Копировать ссылку подписки</button>
                 </div>
                 <div class="card">
-                    <div class="card-header">
-                        <h3>WHITE_FULL</h3>
-                    </div>
+                    <h3>WHITE_FULL</h3>
                     <p>Альтернативный пул стабильных серверов высокой надежности.</p>
                     <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_full.txt')">Копировать ссылку подписки</button>
                 </div>
                 <div class="card">
-                    <div class="card-header">
-                        <h3>WHITE_LITE</h3>
-                    </div>
+                    <h3>WHITE_LITE</h3>
                     <p>Облегченная версия конфигураций для стабильной работы на слабом соединении.</p>
                     <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_lite.txt')">Копировать ссылку подписки</button>
                 </div>
@@ -333,42 +343,45 @@
                     </ol>
                     <a href="https://apps.apple.com/us/app/streisand/id6450534064" class="btn btn-outline" target="_blank">Открыть в App Store</a>
                 </div>
-                <div class="card">
-                    <h3>Hiddify (Desktop / Mobile)</h3>
-                    <p>Многофункциональный клиент с интеллектуальной маршрутизацией.</p>
-                    <ol>
-                        <li>Установите приложение Hiddify.</li>
-                        <li>Добавьте новый профиль подписки.</li>
-                        <li>Запустите защищенное соединение.</li>
-                    </ol>
-                    <a href="https://github.com/hiddify/hiddify-app/releases/download/latest/Hiddify-MacOS.dmg" class="btn btn-outline" target="_blank">Скачать Hiddify</a>
-                </div>
             </div>
         </section>
 
         <!-- Прокси для Telegram -->
         <section id="proxy">
             <h2>Прокси для Telegram</h2>
-            <div class="grid">
+            <div class="grid" style="margin-bottom: 1.5rem;">
                 <div class="card">
-                    <div class="card-header">
-                        <h3>BLACKLIST Proxy</h3>
-                    </div>
+                    <h3>BLACKLIST Proxy</h3>
                     <p>Защищенные прокси-соединения для бесперебойного доступа к мессенджеру.</p>
-                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Подключить прокси</button>
+                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Скопировать прокси</button>
                 </div>
                 <div class="card">
-                    <div class="card-header">
-                        <h3>WHITELIST Proxy</h3>
-                    </div>
+                    <h3>WHITELIST Proxy</h3>
                     <p>Альтернативные каналы связи с высокой скоростью отклика.</p>
-                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Подключить прокси</button>
+                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Скопировать прокси</button>
                 </div>
+            </div>
+
+            <!-- Гайд по прокси -->
+            <div class="card">
+                <h3>Как подключить прокси в Telegram</h3>
+                <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-color);">На ПК:</p>
+                <ol>
+                    <li>Откройте Telegram, перейдите в Настройки (три полоски слева).</li>
+                    <li>Выберите «Данные и хранилище» -> «Прокси».</li>
+                    <li>Нажмите «Добавить прокси», введите данные из списка и сохраните.</li>
+                </ol>
+                <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-color);">На телефоне:</p>
+                <ol>
+                    <li>Откройте Настройки -> «Данные и хранилище» -> «Прокси».</li>
+                    <li>Нажмите «Добавить прокси» (для MTProto удобно использовать готовую ссылку).</li>
+                    <li>Включите тумблер подключения прокси.</li>
+                </ol>
             </div>
         </section>
 
         <footer>
-            <div>Разработчик: <a href="https://github.com/FLAT447" target="_blank">FLAT447</a></div>
+            <div>Канал проекта: <a href="https://t.me/ria_glavnoe" target="_blank">РИА Главное</a></div>
             <div style="margin-top: 0.3rem;">Исходный код: <a href="https://github.com/FLAT447/v2ray-lists-site" target="_blank">GitHub Repository</a></div>
         </footer>
     </div>
