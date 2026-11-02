@@ -3,158 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V2Ray Lists - Бесплатные VPN конфигурации и MTProxy</title>
+    <title>V2Ray Lists - Бесплатные VPN конфигурации</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #0f172a);
-            --card-bg: var(--tg-theme-secondary-bg-color, #1e293b);
-            --text-color: var(--tg-theme-text-color, #f8fafc);
+            --bg-color: var(--tg-theme-bg-color, #090d16);
+            --card-bg: var(--tg-theme-secondary-bg-color, #131c2e);
+            --text-color: var(--tg-theme-text-color, #f1f5f9);
             --text-muted: #94a3b8;
-            --accent: var(--tg-theme-button-color, #38bdf8);
-            --accent-text: var(--tg-theme-button-text-color, #0f172a);
-            --border-color: #334155;
+            --accent: var(--tg-theme-button-color, #0ea5e9);
+            --accent-text: var(--tg-theme-button-text-color, #ffffff);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --hover-bg: rgba(14, 165, 233, 0.05);
         }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
+            line-height: 1.6;
+            padding-bottom: 2rem;
         }
+
         header {
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
-        header a.logo {
+
+        .logo {
             color: var(--accent);
             text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: -0.5px;
         }
-        header nav a {
-            color: var(--text-color);
+
+        nav a {
+            color: var(--text-muted);
             text-decoration: none;
-            margin-left: 0.75rem;
+            margin-left: 1rem;
             font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
         }
-        header nav a:hover {
+
+        nav a:hover {
             color: var(--accent);
         }
+
         .container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 1.25rem;
         }
+
         .hero {
             text-align: center;
-            padding: 2rem 0;
+            padding: 2.5rem 0 1.5rem 0;
         }
+
         .hero h1 {
-            font-size: 1.75rem;
+            font-size: 1.6rem;
             margin-bottom: 0.5rem;
-            color: var(--accent);
+            letter-spacing: -0.5px;
+            color: var(--text-color);
         }
+
         .hero p {
             color: var(--text-muted);
             font-size: 0.95rem;
+            max-width: 500px;
+            margin: 0 auto;
         }
-        .steps {
+
+        .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 0.75rem;
             margin-bottom: 2rem;
         }
-        .step-card {
+
+        .feature-badge {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 0.85rem 0.5rem;
             text-align: center;
         }
-        .step-card h3 {
-            margin: 0 0 0.25rem 0;
-            font-size: 1rem;
+
+        .feature-badge span {
+            display: block;
+            font-size: 0.75rem;
             color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.2rem;
         }
-        .step-card p {
-            margin: 0;
+
+        .feature-badge p {
             font-size: 0.8rem;
             color: var(--text-muted);
         }
+
         section {
             margin-bottom: 2.5rem;
         }
+
         h2 {
-            font-size: 1.25rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.3rem;
+            font-size: 1.15rem;
             margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
+
         .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
         }
+
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1rem;
+            border-radius: 14px;
+            padding: 1.15rem;
+            transition: border-color 0.2s;
         }
+
+        .card:hover {
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.35rem;
+        }
+
         .card h3 {
-            margin: 0 0 0.5rem 0;
             font-size: 1.05rem;
+            font-weight: 600;
         }
+
         .card p {
-            margin: 0 0 0.75rem 0;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
         }
+
+        ol {
+            margin: 0 0 1rem 0;
+            padding-left: 1.1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        ol li {
+            margin-bottom: 0.3rem;
+        }
+
         .btn {
             display: block;
             width: 100%;
             background-color: var(--accent);
             color: var(--accent-text);
             border: none;
-            padding: 0.6rem;
-            border-radius: 0.35rem;
-            font-weight: bold;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-weight: 600;
             font-size: 0.9rem;
             text-align: center;
             cursor: pointer;
             text-decoration: none;
-            box-sizing: border-box;
-            margin-top: 0.5rem;
+            transition: opacity 0.2s, transform 0.1s;
         }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
         .btn:hover {
             opacity: 0.9;
         }
-        ol {
-            margin: 0 0 0.75rem 0;
-            padding-left: 1.2rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
         }
-        ol li {
-            margin-bottom: 0.25rem;
+
+        .btn-outline:hover {
+            background-color: var(--hover-bg);
+            opacity: 1;
         }
+
         footer {
             text-align: center;
-            padding: 2rem 0;
+            padding: 1.5rem 0;
             border-top: 1px solid var(--border-color);
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
+
         footer a {
             color: var(--accent);
             text-decoration: none;
@@ -173,99 +243,105 @@
     </header>
 
     <div class="container" id="top">
-        <section class="hero">
-            <h1>Бесплатные VPN конфигурации и MTProxy</h1>
-            <p>Подписки V2Ray, гайды по клиентам и прокси для Telegram. Выбери конфиг, подключись и обходи блокировки :)</p>
-        </section>
+        <div class="hero">
+            <h1>Обход блокировок нового поколения</h1>
+            <p>Актуальные подписки V2Ray, быстрые прокси и подробные инструкции для всех устройств.</p>
+        </div>
 
-        <!-- Инструкция -->
-        <div class="steps">
-            <div class="step-card">
-                <h3>Скопируй</h3>
-                <p>Скопируй ссылку на подписку одним нажатием.</p>
+        <!-- Преимущества -->
+        <div class="features">
+            <div class="feature-badge">
+                <span>01</span>
+                <p>Копирование в 1 клик</p>
             </div>
-            <div class="step-card">
-                <h3>Вставь</h3>
-                <p>Открой VPN-клиент и добавь подписку.</p>
+            <div class="feature-badge">
+                <span>02</span>
+                <p>Автообновление</p>
             </div>
-            <div class="step-card">
-                <h3>Подключись</h3>
-                <p>Выбери быстрый сервер и запусти VPN.</p>
+            <div class="feature-badge">
+                <span>03</span>
+                <p>Высокая скорость</p>
             </div>
         </div>
 
         <!-- Конфиги -->
         <section id="subs">
-            <h2>V2Ray конфиги</h2>
+            <h2>V2Ray Конфигурации</h2>
             <div class="grid">
                 <div class="card">
-                    <h3>BLACK_FULL</h3>
-                    <p>Полный набор серверов для максимальной производительности.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_full.txt')">Копировать ссылку</button>
+                    <div class="card-header">
+                        <h3>BLACK_FULL</h3>
+                    </div>
+                    <p>Максимальный набор серверов для бескомпромиссной производительности.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_full.txt')">Копировать ссылку подписки</button>
                 </div>
                 <div class="card">
-                    <h3>BLACK_LTE</h3>
-                    <p>Оптимизированные конфигурации для мобильного интернета.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_lte.txt')">Копировать ссылку</button>
+                    <div class="card-header">
+                        <h3>BLACK_LTE</h3>
+                    </div>
+                    <p>Оптимизированные конфигурации специально для мобильного интернета.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_lte.txt')">Копировать ссылку подписки</button>
                 </div>
                 <div class="card">
-                    <h3>WHITE_FULL</h3>
-                    <p>Альтернативная база серверов повышенной стабильности.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_full.txt')">Копировать ссылку</button>
+                    <div class="card-header">
+                        <h3>WHITE_FULL</h3>
+                    </div>
+                    <p>Альтернативный пул стабильных серверов высокой надежности.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_full.txt')">Копировать ссылку подписки</button>
                 </div>
                 <div class="card">
-                    <h3>WHITE_LITE</h3>
-                    <p>Легкая версия конфигураций для слабого соединения.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_lite.txt')">Копировать ссылку</button>
+                    <div class="card-header">
+                        <h3>WHITE_LITE</h3>
+                    </div>
+                    <p>Облегченная версия конфигураций для стабильной работы на слабом соединении.</p>
+                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_lite.txt')">Копировать ссылку подписки</button>
                 </div>
             </div>
         </section>
 
         <!-- Гайды -->
         <section id="guides">
-            <h2>Гайды на клиенты</h2>
+            <h2>Инструкции к клиентам</h2>
             <div class="grid">
                 <div class="card">
-                    <h3>v2rayNG (Android)</h3>
-                    <p>Универсальный клиент для Android устройств[span_0](start_span)[span_0](end_span).</p>
+                    <h3>v2rayNG (Android / TV)</h3>
+                    <p>Универсальный клиент для мобильных устройств на Android.</p>
                     <ol>
-                        <li>Установите и откройте v2rayNG[span_1](start_span)[span_1](end_span).</li>
-                        <li>Скопируйте ссылку на конфиг выше[span_2](start_span)[span_2](end_span).</li>
-                        <li>Нажмите + -> Импорт из буфера обмена[span_3](start_span)[span_3](end_span).</li>
-                        <li>Проверьте задержку и подключитесь[span_4](start_span)[span_4](end_span).</li>
+                        <li>Установите и откройте приложение.</li>
+                        <li>Скопируйте нужную ссылку выше.</li>
+                        <li>Нажмите «+» и выберите импорт из буфера обмена.</li>
                     </ol>
-                    <a href="https://github.com/2dust/v2rayNG/releases/download/2.3.2/v2rayNG_2.3.2-universal.apk" class="btn" target="_blank">Скачать v2rayNG</a>[span_5](start_span)[span_5](end_span)
+                    <a href="https://github.com/2dust/v2rayNG/releases/download/2.3.2/v2rayNG_2.3.2-universal.apk" class="btn btn-outline" target="_blank">Скачать v2rayNG APK</a>
                 </div>
                 <div class="card">
                     <h3>Throne (Windows / Linux)</h3>
-                    <p>Современный десктопный клиент с TUN-режимом[span_6](start_span)[span_6](end_span).</p>
+                    <p>Современный десктопный клиент с поддержкой TUN-режима.</p>
                     <ol>
-                        <li>Скачайте и установите Throne[span_7](start_span)[span_7](end_span).</li>
-                        <li>Добавьте профиль из буфера обмена[span_8](start_span)[span_8](end_span).</li>
-                        <li>Включите режим TUN[span_9](start_span)[span_9](end_span).</li>
-                        <li>Выберите сервер с наименьшим пингом[span_10](start_span)[span_10](end_span).</li>
+                        <li>Установите программу на ПК.</li>
+                        <li>Добавьте профиль из буфера обмена.</li>
+                        <li>Активируйте TUN-режим для всей системы.</li>
                     </ol>
-                    <a href="https://github.com/throneproj/Throne/releases/download/1.2.2/Throne-1.2.2-windows64.zip" class="btn" target="_blank">Скачать Throne</a>[span_11](start_span)[span_11](end_span)
+                    <a href="https://github.com/throneproj/Throne/releases/download/1.2.2/Throne-1.2.2-windows64.zip" class="btn btn-outline" target="_blank">Скачать для Windows</a>
                 </div>
                 <div class="card">
                     <h3>Streisand (iOS / macOS)</h3>
-                    <p>Клиент для экосистемы Apple[span_12](start_span)[span_12](end_span).</p>
+                    <p>Удобный и быстрый клиент для экосистемы Apple.</p>
                     <ol>
-                        <li>Установите Streisand из App Store[span_13](start_span)[span_13](end_span).</li>
-                        <li>Импортируйте подписку из буфера обмена[span_14](start_span)[span_14](end_span).</li>
-                        <li>Выберите сервер и включите тумблер[span_15](start_span)[span_15](end_span).</li>
+                        <li>Установите Streisand из App Store.</li>
+                        <li>Импортируйте скопированную подписку.</li>
+                        <li>Выберите быстрый сервер и включите тумблер.</li>
                     </ol>
-                    <a href="https://apps.apple.com/us/app/streisand/id6450534064" class="btn" target="_blank">Открыть App Store</a>[span_16](start_span)[span_16](end_span)
+                    <a href="https://apps.apple.com/us/app/streisand/id6450534064" class="btn btn-outline" target="_blank">Открыть в App Store</a>
                 </div>
                 <div class="card">
-                    <h3>Hiddify (macOS / Desktop)</h3>
-                    <p>Многофункциональный клиент с гибкой маршрутизацией[span_17](start_span)[span_17](end_span).</p>
+                    <h3>Hiddify (Desktop / Mobile)</h3>
+                    <p>Многофункциональный клиент с интеллектуальной маршрутизацией.</p>
                     <ol>
-                        <li>Установите Hiddify[span_18](start_span)[span_18](end_span).</li>
-                        <li>Добавьте новый профиль из буфера обмена[span_19](start_span)[span_19](end_span).</li>
-                        <li>Включите VPN-сервис[span_20](start_span)[span_20](end_span).</li>
+                        <li>Установите приложение Hiddify.</li>
+                        <li>Добавьте новый профиль подписки.</li>
+                        <li>Запустите защищенное соединение.</li>
                     </ol>
-                    <a href="https://github.com/hiddify/hiddify-app/releases/download/latest/Hiddify-MacOS.dmg" class="btn" target="_blank">Скачать Hiddify</a>[span_21](start_span)[span_21](end_span)
+                    <a href="https://github.com/hiddify/hiddify-app/releases/download/latest/Hiddify-MacOS.dmg" class="btn btn-outline" target="_blank">Скачать Hiddify</a>
                 </div>
             </div>
         </section>
@@ -275,21 +351,25 @@
             <h2>Прокси для Telegram</h2>
             <div class="grid">
                 <div class="card">
-                    <h3>BLACKLIST Proxy</h3>
-                    <p>Списки защищенных прокси для стабильного соединения[span_22](start_span)[span_22](end_span).</p>
-                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Скопировать прокси</button>
+                    <div class="card-header">
+                        <h3>BLACKLIST Proxy</h3>
+                    </div>
+                    <p>Защищенные прокси-соединения для бесперебойного доступа к мессенджеру.</p>
+                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Подключить прокси</button>
                 </div>
                 <div class="card">
-                    <h3>WHITELIST Proxy</h3>
-                    <p>Альтернативные каналы связи для мессенджера[span_23](start_span)[span_23](end_span).</p>
-                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Скопировать прокси</button>
+                    <div class="card-header">
+                        <h3>WHITELIST Proxy</h3>
+                    </div>
+                    <p>Альтернативные каналы связи с высокой скоростью отклика.</p>
+                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">Подключить прокси</button>
                 </div>
             </div>
         </section>
 
         <footer>
-            <div>Разработчик: <a href="https://github.com/FLAT447" target="_blank">FLAT447</a>[span_24](start_span)[span_24](end_span)</div>
-            <div style="margin-top: 0.25rem;">Исходный код: <a href="https://github.com/FLAT447/v2ray-lists-site" target="_blank">GitHub Repository</a>[span_25](start_span)[span_25](end_span)</div>
+            <div>Разработчик: <a href="https://github.com/FLAT447" target="_blank">FLAT447</a></div>
+            <div style="margin-top: 0.3rem;">Исходный код: <a href="https://github.com/FLAT447/v2ray-lists-site" target="_blank">GitHub Repository</a></div>
         </footer>
     </div>
 
