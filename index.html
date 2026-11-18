@@ -1,1336 +1,552 @@
 <!DOCTYPE html>
-<html lang="ru" class="dark">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Эрудит — Telegram Mini App</title>
-    <!-- Официальный SDK Telegram WebApp -->
+    <title>Эрудит — Викторина</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Шрифт Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         :root {
-            --bg-base: #070b14;
-            --surface-glass: rgba(15, 23, 42, 0.78);
-            --border-glass: rgba(148, 163, 184, 0.14);
-            --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            min-height: 100vh;
-            min-height: var(--tg-viewport-stable-height, 100dvh);
-            background-color: var(--bg-base);
-            color: #f8fafc;
-            overflow-x: hidden;
-            overscroll-behavior-y: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         body {
-            background-image:
-                radial-gradient(circle at 12% 8%, rgba(79, 70, 229, 0.18) 0%, transparent 45%),
-                radial-gradient(circle at 88% 92%, rgba(14, 165, 233, 0.14) 0%, transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.9) 0%, #070b14 100%);
-            padding-top: max(12px, var(--safe-top));
-            padding-bottom: max(16px, var(--safe-bottom));
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
-        .glass-card {
-            background: var(--surface-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 480px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* Экран старта */
+        #screen-start {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 24px;
+            padding: 20px;
+        }
+
+        .logo-box {
+            width: 100px;
+            height: 100px;
+            border-radius: 28px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .rules-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            text-align: left;
+            backdrop-filter: blur(12px);
+        }
+
+        .rules-card h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .rules-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .rules-list li span {
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            background: var(--accent-gradient);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+            transition: transform 0.1s ease, opacity 0.2s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        /* Игровой экран */
+        #screen-game {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+        }
+
+        .score-box {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .score-val {
+            color: var(--accent);
+        }
+
+        .timer-box {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timer-val {
+            color: var(--text-color);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 100%;
+            transition: width 1s linear, background-color 0.3s;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .option-btn {
-            transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.18s ease, border-color 0.18s ease, opacity 0.2s ease;
-            touch-action: manipulation;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 16px;
+            color: var(--text-color);
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .option-btn:not(:disabled):hover {
-            background-color: rgba(30, 41, 59, 0.9);
-            border-color: rgba(99, 102, 241, 0.55);
+        .option-btn:hover:not(:disabled) {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent);
         }
 
-        .option-btn:not(:disabled):active {
-            transform: scale(0.982);
-            background-color: rgba(79, 70, 229, 0.22);
-            border-color: rgba(129, 140, 248, 0.7);
+        .option-btn.correct {
+            background: rgba(34, 197, 94, 0.2) !important;
+            border-color: var(--success) !important;
+            color: #4ade80 !important;
         }
 
-        @keyframes floatScore {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(0.95);
-            }
-            20% {
-                opacity: 1;
-                transform: translateY(-6px) scale(1.08);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-34px) scale(1);
-            }
+        .option-btn.incorrect {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: var(--error) !important;
+            color: #f87171 !important;
         }
 
-        .animate-score-float {
-            animation: floatScore 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .game-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
         }
 
-        @keyframes slideFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .btn-skip {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .animate-enter {
-            animation: slideFadeIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .btn-skip:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
         }
+
+        /* Анимация всплывающих баллов */
+        .score-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        .score-badge.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .score-badge.plus { background: rgba(34, 197, 94, 0.9); color: #fff; }
+        .score-badge.minus-two { background: rgba(239, 68, 68, 0.9); color: #fff; }
+        .score-badge.minus-one { background: rgba(245, 158, 11, 0.9); color: #fff; }
     </style>
 </head>
-<body class="font-sans antialiased select-none flex flex-col justify-between">
+<body>
 
-    <!-- Верхняя панель (Шапка) -->
-    <header class="w-full max-w-lg mx-auto px-3.5 pt-1 pb-2">
-        <div class="glass-card rounded-2xl px-3.5 py-3 flex items-center justify-between gap-2.5">
-            <!-- Название игры и профиль игрока -->
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/25 to-sky-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 shrink-0 shadow-inner">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"></path>
-                    </svg>
-                </div>
-                <div class="min-w-0">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-sm sm:text-base font-extrabold tracking-tight text-white">Эрудит</span>
-                        <span class="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Quiz</span>
-                    </div>
-                    <p id="player-name" class="text-xs text-slate-400 truncate mt-0.5">Игрок</p>
-                </div>
+    <div id="scoreBadge" class="score-badge">+1</div>
+
+    <div class="container">
+        <!-- Экран старта -->
+        <div id="screen-start">
+            <div class="logo-box">🧠</div>
+            <div>
+                <h1>ЭРУДИТ</h1>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 6px;">Интеллектуальная викторина</p>
             </div>
-
-            <!-- Счётчики и кнопка сброса -->
-            <div class="flex items-center gap-2 shrink-0">
-                <!-- Текущий счёт -->
-                <div class="relative bg-slate-950/80 border border-slate-800/90 rounded-xl px-2.5 py-1.5 text-center min-w-[66px]">
-                    <span class="block text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Счёт</span>
-                    <span id="score-value" class="text-base sm:text-lg font-extrabold text-white tabular-nums leading-tight">0</span>
-                    <div id="score-float-anchor" class="pointer-events-none absolute -top-3.5 right-0.5 z-20"></div>
-                </div>
-
-                <!-- Пройдено уникальных вопросов -->
-                <div class="bg-slate-950/80 border border-slate-800/90 rounded-xl px-2.5 py-1.5 text-center min-w-[66px]">
-                    <span class="block text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Пройдено</span>
-                    <span id="passed-value" class="text-base sm:text-lg font-bold text-slate-200 tabular-nums leading-tight">0</span>
-                </div>
-
-                <!-- Кнопка сброса прогресса -->
-                <button id="reset-open-btn" type="button" aria-label="Сбросить прогресс" title="Сбросить прогресс" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-rose-950/60 active:bg-rose-950/80 text-slate-400 hover:text-rose-300 border border-slate-800 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Центральная игровая зона -->
-    <main class="w-full max-w-lg mx-auto px-3.5 py-1 flex-1 flex flex-col justify-center">
-        
-        <!-- Компактная легенда начисления очков -->
-        <div class="flex items-center justify-between gap-1.5 mb-2.5 px-0.5 flex-wrap">
-            <div class="flex items-center gap-1.5 flex-wrap text-[11px] font-medium">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>+1 верно
-                </span>
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/25 text-rose-300">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>-2 ошибка
-                </span>
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>-1 время/пропуск
-                </span>
-            </div>
-            <span id="source-tag" class="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Без повторов</span>
-        </div>
-
-        <!-- Основная карточка -->
-        <section class="glass-card rounded-3xl p-4 sm:p-6 relative overflow-hidden">
             
-            <!-- Экран инициализации и синхронизации с CloudStorage -->
-            <div id="sync-screen" class="py-8 space-y-5">
-                <div class="flex items-center justify-between">
-                    <div class="h-5 w-28 bg-slate-800/90 rounded-full animate-pulse"></div>
-                    <div class="h-6 w-16 bg-slate-800/90 rounded-full animate-pulse"></div>
-                </div>
-                <div class="h-1.5 w-full bg-slate-800/90 rounded-full animate-pulse"></div>
-                <div class="space-y-2.5 pt-1">
-                    <div class="h-5 w-full bg-slate-800/90 rounded-lg animate-pulse"></div>
-                    <div class="h-5 w-3/4 bg-slate-800/90 rounded-lg animate-pulse"></div>
-                </div>
-                <div class="space-y-2.5 pt-2">
-                    <div class="h-12 bg-slate-800/70 rounded-2xl animate-pulse"></div>
-                    <div class="h-12 bg-slate-800/70 rounded-2xl animate-pulse"></div>
-                    <div class="h-12 bg-slate-800/70 rounded-2xl animate-pulse"></div>
-                    <div class="h-12 bg-slate-800/70 rounded-2xl animate-pulse"></div>
-                </div>
-                <div class="flex items-center justify-center gap-2 text-xs text-indigo-300/90 pt-1">
-                    <svg class="w-4 h-4 animate-spin text-indigo-400" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    <span id="sync-status-label">Синхронизация истории вопросов...</span>
+            <div class="rules-card">
+                <h3>Правила игры:</h3>
+                <ul class="rules-list">
+                    <li><span>15 секунд</span> на раздумье над каждым вопросом.</li>
+                    <li><span>+1 балл</span> за правильный ответ.</li>
+                    <li><span>-2 балла</span> за ошибку.</li>
+                    <li><span>-1 балл</span> за пропуск или истечение времени.</li>
+                    <li><span>Без повторов</span> — вопросы никогда не повторяются!</li>
+                </ul>
+            </div>
+
+            <button class="btn-primary" onclick="startGame()">Начать игру</button>
+        </div>
+
+        <!-- Игровой экран -->
+        <div id="screen-game">
+            <div class="header">
+                <div class="score-box">Счёт: <span id="scoreVal" class="score-val">0</span></div>
+                <div class="timer-box">
+                    <span>⏱️</span>
+                    <span id="timerVal" class="timer-val">15с</span>
                 </div>
             </div>
 
-            <!-- Контейнер активного вопроса -->
-            <div id="quiz-screen" class="hidden">
-                <!-- Верхняя строка карточки: Категория и Таймер -->
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                    <span id="category-badge" class="px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 truncate max-w-[65%]">
-                        Категория
-                    </span>
-
-                    <div id="timer-pill" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/90 border border-slate-800 text-xs font-bold text-indigo-300 tabular-nums transition-colors shrink-0">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span id="timer-text">10.0с</span>
-                    </div>
-                </div>
-
-                <!-- Шкала обратного отсчёта 10.0с -->
-                <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden mb-4 border border-slate-800/80">
-                    <div id="timer-bar" class="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-cyan-300 rounded-full transition-colors duration-200" style="width: 100%;"></div>
-                </div>
-
-                <!-- Текст вопроса -->
-                <h1 id="question-title" class="text-base sm:text-lg font-bold text-white leading-snug mb-4">
-                    Текст вопроса
-                </h1>
-
-                <!-- Варианты ответа -->
-                <div id="answers-list" class="grid grid-cols-1 gap-2.5"></div>
-
-                <!-- Панель пропуска во время отсчёта таймера -->
-                <div id="skip-bar" class="mt-4 pt-3.5 border-t border-slate-800/70 flex items-center justify-between gap-2">
-                    <span class="text-[11px] text-slate-400">Не уверены в ответе?</span>
-                    <button id="skip-btn" type="button" class="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 active:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-semibold transition-colors inline-flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.81V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z"></path>
-                        </svg>
-                        <span>Пропустить (-1 балл)</span>
-                    </button>
-                </div>
-
-                <!-- Блок результата и кнопка следующего вопроса -->
-                <div id="result-bar" class="hidden mt-4 pt-3.5 border-t border-slate-800/80 space-y-3 animate-enter">
-                    <div id="result-message" class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3"></div>
-                    <button id="next-btn" type="button" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm shadow-lg shadow-indigo-950/60 transition-all flex items-center justify-center gap-2">
-                        <span>Следующий вопрос</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
-                        </svg>
-                    </button>
-                </div>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar-fill"></div>
             </div>
-        </section>
-    </main>
 
-    <!-- Нижняя строка статуса хранилища -->
-    <footer class="w-full max-w-lg mx-auto px-4 pt-2 pb-1 text-center">
-        <p id="cloud-status-footer" class="text-[11px] text-slate-500">Защита от повторов активна</p>
-    </footer>
+            <div class="question-card">
+                <div>
+                    <div id="questionText" class="question-text">Загрузка вопроса...</div>
+                    <div id="optionsList" class="options-list"></div>
+                </div>
 
-    <!-- Модальное окно подтверждения сброса прогресса -->
-    <div id="reset-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="glass-card max-w-sm w-full rounded-3xl p-5 sm:p-6 text-center space-y-4 border border-slate-700/80 animate-enter">
-            <div class="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 mx-auto">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
-                </svg>
-            </div>
-            <div class="space-y-1.5">
-                <h2 class="text-base font-bold text-white">Очистить историю и счёт?</h2>
-                <p class="text-xs text-slate-300 leading-relaxed">
-                    Текущий счёт обнулится, а список пройденных вопросов будет удалён из памяти устройства и облака Telegram.
-                </p>
-            </div>
-            <div class="grid grid-cols-2 gap-2.5 pt-1">
-                <button id="reset-cancel-btn" type="button" class="w-full py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 font-semibold text-xs border border-slate-700 transition-colors">
-                    Отмена
-                </button>
-                <button id="reset-confirm-btn" type="button" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold text-xs shadow-lg shadow-rose-950/50 transition-colors">
-                    Сбросить всё
-                </button>
+                <div class="game-footer">
+                    <button class="btn-skip" onclick="skipQuestion()">Пропустить (-1)</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        (() => {
-            'use strict';
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
 
-            // Константы правил и хранилища
-            const CONFIG = {
-                TIME_LIMIT_MS: 10000,
-                POINTS_CORRECT: 1,
-                POINTS_WRONG: -2,
-                POINTS_TIMEOUT: -1,
-                POINTS_SKIP: -1,
-                CLOUD_TIMEOUT_MS: 1500,
-                CHUNK_MAX_CHARS: 3900, // Безопасный запас ниже лимита 4096 байт Telegram CloudStorage
-                MAX_CLOUD_CHUNKS: 12,
-                STORAGE_KEYS: {
-                    SCORE: 'erudit_v3_score',
-                    PASSED: 'erudit_v3_passed',
-                    HASHES_LOCAL: 'erudit_v3_hashes_local',
-                    CHUNK_META: 'erudit_v3_chunk_count',
-                    CHUNK_PREFIX: 'erudit_v3_hashes_c_'
-                }
-            };
+        let score = 0;
+        let timeLeft = 15;
+        const maxTime = 15;
+        let timerInterval = null;
+        let currentQuestion = null;
+        let isAnswerLocked = false;
+        let usedHashes = new Set();
 
-            // Telegram WebApp SDK
-            const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+        // База вопросов
+        const baseQuestions = [
+            { q: "Какая планета является самой большой в Солнечной системе?", options: ["Юпитер", "Сатурн", "Нептун", "Земля"], answer: 0 },
+            { q: "Какой газ преобладает в атмосфере Земли?", options: ["Кислород", "Азот", "Углекислый газ", "Аргон"], answer: 1 },
+            { q: "В каком году человек впервые ступил на Луну?", options: ["1965", "1969", "1971", "1975"], answer: 1 },
+            { q: "Какая столица у Австралии?", options: ["Сидней", "Мельбурн", "Канберра", "Брисбен"], answer: 2 },
+            { q: "Сколько костей в теле взрослого человека?", options: ["186", "206", "226", "246"], answer: 1 },
+            { q: "Какой химический элемент обозначается символом 'Au'?", options: ["Серебро", "Медь", "Золото", "Аллюминий"], answer: 2 },
+            { q: "Кто написал роман «Война и мир»?", options: ["Достоевский Ф.М.", "Толстой Л.Н.", "Пушкин А.С.", "Чехов А.П."], answer: 1 },
+            { q: "Какое самое глубокое озеро в мире?", options: ["Виктория", "Мертвое море", "Байкал", "Супериор"], answer: 2 },
+            { q: "Сколько зубов у взрослого человека в норме?", options: ["28", "30", "32", "34"], answer: 2 },
+            { q: "Какая самая длинная река в мире?", options: ["Нил", "Амазонка", "Янцзы", "Миссисипи"], answer: 1 }
+        ];
 
-            // Состояние игры
-            const state = {
-                score: 0,
-                passedCount: 0,
-                usedHashes: new Set(),
-                remotePool: [],
-                isFetchingRemote: false,
-                currentQuestion: null,
-                isLocked: false,
-                rafId: null,
-                deadline: 0,
-                cloudAvailable: false
-            };
+        let questionsPool = [...baseQuestions];
 
-            // Кэш DOM-элементов
-            const dom = {
-                playerName: document.getElementById('player-name'),
-                scoreValue: document.getElementById('score-value'),
-                scoreFloatAnchor: document.getElementById('score-float-anchor'),
-                passedValue: document.getElementById('passed-value'),
-                sourceTag: document.getElementById('source-tag'),
-                syncScreen: document.getElementById('sync-screen'),
-                syncStatusLabel: document.getElementById('sync-status-label'),
-                quizScreen: document.getElementById('quiz-screen'),
-                categoryBadge: document.getElementById('category-badge'),
-                timerPill: document.getElementById('timer-pill'),
-                timerText: document.getElementById('timer-text'),
-                timerBar: document.getElementById('timer-bar'),
-                questionTitle: document.getElementById('question-title'),
-                answersList: document.getElementById('answers-list'),
-                skipBar: document.getElementById('skip-bar'),
-                skipBtn: document.getElementById('skip-btn'),
-                resultBar: document.getElementById('result-bar'),
-                resultMessage: document.getElementById('result-message'),
-                nextBtn: document.getElementById('next-btn'),
-                cloudStatusFooter: document.getElementById('cloud-status-footer'),
-                resetOpenBtn: document.getElementById('reset-open-btn'),
-                resetModal: document.getElementById('reset-modal'),
-                resetCancelBtn: document.getElementById('reset-cancel-btn'),
-                resetConfirmBtn: document.getElementById('reset-confirm-btn')
-            };
+        // Хеширование для защиты от повторов
+        function getHash(str) {
+            let hash = 2166136261;
+            for (let i = 0; i < str.length; i++) {
+                hash ^= str.charCodeAt(i);
+                hash = Math.imul(hash, 16777619);
+            }
+            return (hash >>> 0).toString(16);
+        }
 
-            /**
-             * Встроенная база из 88 уникальных интеллектуальных вопросов на русском языке
-             */
-            const BUILTIN_QUESTIONS = [
-                // Космос и астрономия
-                { c: 'Космос', q: 'Какая планета Солнечной системы обладает самой плотной атмосферой среди планет земной группы?', o: ['Венера', 'Марс', 'Земля', 'Меркурий'], a: 'Венера', e: 'Давление у поверхности Венеры примерно в 92 раза выше земного.' },
-                { c: 'Космос', q: 'Как называется крупнейший спутник Сатурна, имеющий плотную азотную атмосферу?', o: ['Титан', 'Европа', 'Ганимед', 'Энцелад'], a: 'Титан', e: 'Титан — единственный спутник в Солнечной системе с плотной атмосферой и жидкими озёрами из метана.' },
-                { c: 'Космос', q: 'Какая планета вращается вокруг своей оси в направлении, противоположном большинству планет?', o: ['Венера', 'Юпитер', 'Нептун', 'Сатурн'], a: 'Венера', e: 'Венера вращается с востока на запад, поэтому Солнце там восходит на западе.' },
-                { c: 'Космос', q: 'Какой космический аппарат первым покинул пределы гелиосферы и вышел в межзвёздное пространство?', o: ['Вояджер-1', 'Пионер-10', 'Новые горизонты', 'Кассини'], a: 'Вояджер-1', e: '«Вояджер-1» пересёк гелиопаузу в августе 2012 года.' },
-                { c: 'Космос', q: 'Как называется ближайшая к Солнцу звезда после самого Солнца?', o: ['Проксима Центавра', 'Сириус', 'Альфа Центавра A', 'Вега'], a: 'Проксима Центавра', e: 'Красный карлик Проксима Центавра удалён от Земли примерно на 4,24 светового года.' },
-                { c: 'Космос', q: 'Сколько земных суток примерно длится один оборот Луны вокруг Земли (сидерический месяц)?', o: ['27,3 суток', '29,5 суток', '24 суток', '31 сутки'], a: '27,3 суток', e: 'Сидерический месяц составляет около 27,32 земных суток.' },
-                { c: 'Космос', q: 'На какой планете находится вулкан Олимп — самая высокая гора в Солнечной системе?', o: ['Марс', 'Венера', 'Меркурий', 'Ио'], a: 'Марс', e: 'Высота потухшего щитового вулкана Олимп на Марсе достигает около 21,9 км.' },
-                { c: 'Космос', q: 'Какой химический элемент составляет около 73% массы видимого вещества Вселенной?', o: ['Водород', 'Гелий', 'Кислород', 'Углерод'], a: 'Водород', e: 'Водород — самый распространённый элемент во Вселенной.' },
-                { c: 'Космос', q: 'Как называется точка орбиты планеты, в которой она находится ближе всего к Солнцу?', o: ['Перигелий', 'Афелий', 'Перигей', 'Зенит'], a: 'Перигелий', e: 'Перигелий — ближайшая к Солнцу точка орбиты небесного тела.' },
-                { c: 'Космос', q: 'Кто стал первым человеком в истории, вышедшим в открытый космос?', o: ['Алексей Леонов', 'Юрий Гагарин', 'Нил Армстронг', 'Эдвард Уайт'], a: 'Алексей Леонов', e: 'Алексей Леонов совершил первый выход в открытый космос 18 марта 1965 года.' },
+        // Синхронизация с Telegram CloudStorage
+        async function loadHistory() {
+            try {
+                const local = localStorage.getItem('erudit_used');
+                if (local) JSON.parse(local).forEach(h => usedHashes.add(h));
 
-                // Наука и физика
-                { c: 'Наука', q: 'Какой металл является самым тугоплавким из всех чистых металлов?', o: ['Вольфрам', 'Титан', 'Осмий', 'Платина'], a: 'Вольфрам', e: 'Температура плавления вольфрама составляет 3422 °C.' },
-                { c: 'Наука', q: 'Какое физическое явление объясняет голубой цвет дневного неба на Земле?', o: ['Рэлеевское рассеяние', 'Дифракция света', 'Полное внутреннее отражение', 'Эффект Доплера'], a: 'Рэлеевское рассеяние', e: 'Молекулы газов атмосферы сильнее рассеивают коротковолновый синий свет.' },
-                { c: 'Наука', q: 'Какой химический элемент имеет порядковый номер 79 в таблице Менделеева?', o: ['Золото', 'Серебро', 'Ртуть', 'Свинец'], a: 'Золото', e: 'Атомный номер золота (Au) равен 79.' },
-                { c: 'Наука', q: 'Какая частица в атоме не имеет электрического заряда?', o: ['Нейтрон', 'Протон', 'Электрон', 'Позитрон'], a: 'Нейтрон', e: 'Нейтрон является электронейтральной субатомной частицей в ядре атома.' },
-                { c: 'Наука', q: 'В каких единицах в системе СИ измеряется электрическая ёмкость?', o: ['Фарад', 'Генри', 'Вебер', 'Сименс'], a: 'Фарад', e: 'Единица электрической ёмкости названа в честь Майкла Фарадея.' },
-                { c: 'Наука', q: 'Какой газ выделяется при реакции соды с уксусной кислотой?', o: ['Углекислый газ', 'Водород', 'Кислород', 'Метан'], a: 'Углекислый газ', e: 'При взаимодействии гидрокарбоната натрия и уксусной кислоты выделяется CO2.' },
-                { c: 'Наука', q: 'Чему равен абсолютный нуль температуры по шкале Цельсия?', o: ['-273,15 °C', '-273,00 °C', '-300,15 °C', '-196,15 °C'], a: '-273,15 °C', e: '0 Кельвинов соответствует ровно -273,15 градуса Цельсия.' },
-                { c: 'Наука', q: 'Какой учёный открыл явление радиоактивности солей урана в 1896 году?', o: ['Анри Беккерель', 'Мария Кюри', 'Эрнест Резерфорд', 'Вильгельм Рентген'], a: 'Анри Беккерель', e: 'Анри Беккерель обнаружил естественную радиоактивность урана в 1896 году.' },
-                { c: 'Наука', q: 'Как называется переход вещества из твёрдого состояния сразу в газообразное, минуя жидкое?', o: ['Сублимация', 'Конденсация', 'Десублимация', 'Кристаллизация'], a: 'Сублимация', e: 'Сублимация (возгонка) характерна, например, для сухого льда.' },
-                { c: 'Наука', q: 'Какой металл остаётся жидким при стандартной комнатной температуре (20 °C)?', o: ['Ртуть', 'Галлий', 'Цезий', 'Рубидий'], a: 'Ртуть', e: 'Температура плавления ртути составляет -38,83 °C.' },
-                { c: 'Наука', q: 'Какой закон утверждает, что объём газа при постоянной температуре обратно пропорционален давлению?', o: ['Закон Бойля — Мариотта', 'Закон Гей-Люссака', 'Закон Шарля', 'Закон Авогадро'], a: 'Закон Бойля — Мариотта', e: 'При изотермическом процессе произведение давления на объём постоянно.' },
-
-                // История
-                { c: 'История', q: 'В каком году был подписан Вестфальский мир, завершивший Тридцатилетнюю войну в Европе?', o: ['1648', '1618', '1701', '1598'], a: '1648', e: 'Вестфальский мир 1648 года заложил основы современной системы международных отношений.' },
-                { c: 'История', q: 'Как называлась древняя торговая дорога, связывавшая Восточную Азию со Средиземноморьем?', o: ['Великий шёлковый путь', 'Янтарный путь', 'Путь из варяг в греки', 'Путь благовоний'], a: 'Великий шёлковый путь', e: 'Великий шёлковый путь функционировал со II века до н.э. до XV века.' },
-                { c: 'История', q: 'Кто из мореплавателей первым достиг Индии морским путём вокруг Африки?', o: ['Васко да Гама', 'Фернан Магеллан', 'Бартоломеу Диаш', 'Америго Веспуччи'], a: 'Васко да Гама', e: 'Экспедиция Васко да Гамы прибыла в Каликут в мае 1498 года.' },
-                { c: 'История', q: 'В каком городе находилась знаменитая античная библиотека, основанная при Птолемеях?', o: ['Александрия', 'Пергам', 'Эфес', 'Антиохия'], a: 'Александрия', e: 'Александрийская библиотека была крупнейшим научным центром античного мира.' },
-                { c: 'История', q: 'Какой император перенёс столицу Римской империи в город Византий (Константинополь)?', o: ['Константин I Великий', 'Диоклетиан', 'Юстиниан I', 'Феодосий I'], a: 'Константин I Великий', e: 'В 330 году Константин Великий провозгласил город Новым Римом.' },
-                { c: 'История', q: 'В каком году изобретатель Иоганн Гутенберг напечатал свою знаменитую 42-строчную Библию?', o: ['1455', '1492', '1415', '1517'], a: '1455', e: 'Издание Библии Гутенберга в середине 1450-х годов положило начало книгопечатанию в Европе.' },
-                { c: 'История', q: 'Какое государство первым в мире предоставило женщинам право голоса на национальных выборах в 1893 году?', o: ['Новая Зеландия', 'Швеция', 'Финляндия', 'Норвегия'], a: 'Новая Зеландия', e: 'Новая Зеландия закрепила избирательное право женщин 19 сентября 1893 года.' },
-                { c: 'История', q: 'Как назывался первый искусственный спутник Земли, запущенный 4 октября 1957 года?', o: ['Спутник-1', 'Восток-1', 'Луна-1', 'Эксплорер-1'], a: 'Спутник-1', e: 'ПС-1 («Спутник-1») открыл космическую эру человечества.' },
-                { c: 'История', q: 'Какая письменность использовалась в Древнем Египте для повседневных записей на папирусе наряду с иероглифами?', o: ['Иератическое письмо', 'Клинопись', 'Линейное письмо Б', 'Глаголица'], a: 'Иератическое письмо', e: 'Иератика представляла собой скорописную форму древнеегипетских иероглифов.' },
-                { c: 'История', q: 'В каком году пал Константинополь под натиском войск Османской империи?', o: ['1453', '1492', '1389', '1526'], a: '1453', e: 'Падение Константинополя 29 мая 1453 года ознаменовало конец Византийской империи.' },
-
-                // География
-                { c: 'География', q: 'Какой пролив разделяет Азию и Северную Америку в самой узкой части?', o: ['Берингов пролив', 'Магелланов пролив', 'Гибралтарский пролив', 'Пролив Дрейка'], a: 'Берингов пролив', e: 'Ширина Берингова пролива составляет около 86 км.' },
-                { c: 'География', q: 'Какое озеро является самым глубоким пресноводным озером на планете?', o: ['Байкал', 'Танганьика', 'Верхнее', 'Виктория'], a: 'Байкал', e: 'Максимальная глубина Байкала составляет 1642 метра.' },
-                { c: 'География', q: 'Столицей какого государства является город Канберра?', o: ['Австралия', 'Новая Зеландия', 'Канада', 'ЮАР'], a: 'Австралия', e: 'Канберра была выбрана столицей Австралии как компромисс между Сиднеем и Мельбурном.' },
-                { c: 'География', q: 'Какая пустыня является самой сухой неполярной пустыней в мире?', o: ['Атакама', 'Сахара', 'Гоби', 'Намиб'], a: 'Атакама', e: 'В некоторых районах чилийской пустыни Атакама дожди не выпадают десятилетиями.' },
-                { c: 'География', q: 'На территории какой страны расположен самый высокий водопад в мире — Анхель?', o: ['Венесуэла', 'Бразилия', 'Перу', 'Колумбия'], a: 'Венесуэла', e: 'Общая высота водопада Анхель в Венесуэле составляет 979 метров.' },
-                { c: 'География', q: 'Какой остров является крупнейшим на Земле (не считая материков)?', o: ['Гренландия', 'Новая Гвинея', 'Калимантан', 'Мадагаскар'], a: 'Гренландия', e: 'Площадь Гренландии составляет около 2,166 млн км².' },
-                { c: 'География', q: 'Через сколько часовых поясов простирается территория России?', o: ['11', '9', '12', '8'], a: '11', e: 'Россия охватывает 11 часовых зон (от UTC+2 до UTC+12).' },
-                { c: 'География', q: 'Какая река протекает через большее число столиц государств, чем любая другая река мира?', o: ['Дунай', 'Рейн', 'Нил', 'Меконг'], a: 'Дунай', e: 'Дунай протекает через четыре столицы: Вену, Братиславу, Будапешт и Белград.' },
-                { c: 'География', q: 'Какое море на Земле не имеет берегов и ограничено океаническими течениями?', o: ['Саргассово море', 'Коралловое море', 'Тасманово море', 'Филиппинское море'], a: 'Саргассово море', e: 'Саргассово море в Атлантике окружено течениями Гольфстрим, Северо-Атлантическим, Канарским и Пассатным.' },
-                { c: 'География', q: 'Какая горная система отделяет Европу от Азии с севера на юг?', o: ['Уральские горы', 'Кавказские горы', 'Альпы', 'Карпаты'], a: 'Уральские горы', e: 'Восточное подножие Уральских гор принято считать границей между Европой и Азией.' },
-
-                // Технологии и информатика
-                { c: 'Технологии', q: 'Кто считается автором первого в истории алгоритма, написанного для аналитической машины Чарльза Бэббиджа?', o: ['Ада Лавлейс', 'Алан Тьюринг', 'Грейс Хоппер', 'Джон фон Нейман'], a: 'Ада Лавлейс', e: 'В 1843 году Ада Лавлейс составила алгоритм вычисления чисел Бернулли.' },
-                { c: 'Технологии', q: 'Сколько бит содержится в одном стандартном байте информации?', o: ['8 бит', '16 бит', '4 бита', '32 бита'], a: '8 бит', e: 'Один октет (байт) состоит из 8 двоичных разрядов (битов).' },
-                { c: 'Технологии', q: 'Какой протокол отвечает за преобразование доменных имён сайтов в IP-адреса?', o: ['DNS', 'DHCP', 'HTTP', 'SMTP'], a: 'DNS', e: 'Domain Name System (DNS) переводит читаемые домены в числовые IP-адреса.' },
-                { c: 'Технологии', q: 'В каком году Тим Бернерс-Ли опубликовал первый в мире веб-сайт?', o: ['1991', '1989', '1995', '1984'], a: '1991', e: 'Первый веб-сайт info.cern.ch стал доступен в августе 1991 года.' },
-                { c: 'Технологии', q: 'Какой язык программирования был создан Гвидо ван Россумом в 1991 году?', o: ['Python', 'Java', 'Ruby', 'JavaScript'], a: 'Python', e: 'Python был назван в честь британского комедийного шоу «Летающий цирк Монти Пайтона».' },
-                { c: 'Технологии', q: 'Что означает буква S в аббревиатуре HTTPS?', o: ['Secure', 'Server', 'System', 'Standard'], a: 'Secure', e: 'HTTPS — HyperText Transfer Protocol Secure, защищённый протокол передачи данных.' },
-                { c: 'Технологии', q: 'Какая система счисления используется на аппаратном уровне в современных цифровых процессорах?', o: ['Двоичная', 'Троичная', 'Восьмеричная', 'Десятичная'], a: 'Двоичная', e: 'Логические вентили процессоров оперируют двумя состояниями: 0 и 1.' },
-                { c: 'Технологии', q: 'Кто разработал ядро операционной системы Linux в 1991 году?', o: ['Линус Торвальдс', 'Ричард Столлман', 'Кен Томпсон', 'Деннис Ритчи'], a: 'Линус Торвальдс', e: 'Финский программист Линус Торвальдс представил первую версию ядра Linux в 1991 году.' },
-                { c: 'Технологии', q: 'Какой алгоритм поиска в отсортированном массиве имеет логарифмическую сложность O(log n)?', o: ['Бинарный поиск', 'Линейный поиск', 'Пузырьковая сортировка', 'Поиск в ширину'], a: 'Бинарный поиск', e: 'Бинарный поиск на каждом шаге делит область поиска пополам.' },
-                { c: 'Технологии', q: 'Какой порт по умолчанию используется для зашифрованного веб-трафика HTTPS?', o: ['443', '80', '22', '21'], a: '443', e: 'Стандартный TCP-порт для HTTPS — 443 (для HTTP — 80).' },
-
-                // Биология и медицина
-                { c: 'Биология', q: 'Какой органоид эукариотической клетки называют её «энергетической станцией»?', o: ['Митохондрия', 'Рибосома', 'Лизосома', 'Аппарат Гольджи'], a: 'Митохондрия', e: 'В митохондриях синтезируется основная часть молекул АТФ.' },
-                { c: 'Биология', q: 'Какой витамин синтезируется в коже человека под воздействием ультрафиолетовых лучей?', o: ['Витамин D', 'Витамин C', 'Витамин B12', 'Витамин K'], a: 'Витамин D', e: 'Холекальциферол (витамин D3) образуется в эпидермисе под действием УФ-лучей.' },
-                { c: 'Биология', q: 'Сколько камер имеет сердце взрослого человека?', o: ['Четыре', 'Три', 'Две', 'Пять'], a: 'Четыре', e: 'Сердце человека состоит из двух предсердий и двух желудочков.' },
-                { c: 'Биология', q: 'Какое азотистое основание встречается в РНК вместо тимина, присутствующего в ДНК?', o: ['Урацил', 'Аденин', 'Гуанин', 'Цитозин'], a: 'Урацил', e: 'В молекуле РНК комплементарную пару аденину составляет урацил.' },
-                { c: 'Биология', q: 'Какая группа крови является универсальным донором эритроцитов (без учёта редких подгрупп)?', o: ['I (0) отрицательная', 'IV (AB) положительная', 'II (A) отрицательная', 'III (B) положительная'], a: 'I (0) отрицательная', e: 'Эритроциты группы 0 Rh- не содержат антигенов A, B и резус-фактора.' },
-                { c: 'Биология', q: 'Какое животное является самым крупным из когда-либо существовавших на Земле?', o: ['Синий кит', 'Аргентинозавр', 'Мегалодон', 'Кашалот'], a: 'Синий кит', e: 'Длина синего кита достигает 33 метров, а масса превышает 150 тонн.' },
-                { c: 'Биология', q: 'Как называется процесс деления соматических клеток, при котором сохраняется число хромосом?', o: ['Митоз', 'Мейоз', 'Осмос', 'Фагоцитоз'], a: 'Митоз', e: 'Митоз обеспечивает точное распределение генетического материала между дочерними клетками.' },
-                { c: 'Биология', q: 'Какой пигмент придаёт зелёную окраску листьям растений и участвует в фотосинтезе?', o: ['Хлорофилл', 'Каротин', 'Меланин', 'Гемоглобин'], a: 'Хлорофилл', e: 'Хлорофилл поглощает солнечную энергию для преобразования CO2 и воды в глюкозу.' },
-                { c: 'Биология', q: 'Сколько шейных позвонков у жирафа?', o: ['7', '14', '21', '12'], a: '7', e: 'Как и у почти всех млекопитающих, у жирафа ровно 7 шейных позвонков, но они очень длинные.' },
-                { c: 'Биология', q: 'Какая кость является самой длинной и прочной в скелете человека?', o: ['Бедренная кость', 'Большеберцовая кость', 'Плечевая кость', 'Лучевая кость'], a: 'Бедренная кость', e: 'Бедренная кость составляет около четверти роста человека.' },
-
-                // Литература и искусство
-                { c: 'Литература', q: 'Кто написал антиутопический роман «451 градус по Фаренгейту»?', o: ['Рэй Брэдбери', 'Джордж Оруэлл', 'Олдос Хаксли', 'Евгений Замятин'], a: 'Рэй Брэдбери', e: 'Роман Рэя Брэдбери был опубликован в 1953 году.' },
-                { c: 'Литература', q: 'Как звали кота-оборотня в романе Михаила Булгакова «Мастер и Маргарита»?', o: ['Бегемот', 'Азазелло', 'Фагот', 'Гелла'], a: 'Бегемот', e: 'Огромный чёрный кот Бегемот — один из членов свиты Воланда.' },
-                { c: 'Литература', q: 'Кто является автором романа «Преступление и наказание»?', o: ['Фёдор Достоевский', 'Лев Толстой', 'Иван Тургенев', 'Николай Гоголь'], a: 'Фёдор Достоевский', e: 'Роман Ф. М. Достоевского впервые опубликован в 1866 году.' },
-                { c: 'Литература', q: 'Какой писатель создал цикл произведений о сыщике Шерлоке Холмсе?', o: ['Артур Конан Дойл', 'Агата Кристи', 'Гилберт Честертон', 'Эдгар Аллан По'], a: 'Артур Конан Дойл', e: 'Первая повесть о Шерлоке Холмсе «Этюд в багровых тонах» вышла в 1887 году.' },
-                { c: 'Литература', q: 'Кто написал повесть-сказку «Маленький принц»?', o: ['Антуан де Сент-Экзюпери', 'Жюль Верн', 'Виктор Гюго', 'Альбер Камю'], a: 'Антуан де Сент-Экзюпери', e: 'Философская сказка впервые издана в 1943 году.' },
-                { c: 'Искусство', q: 'Кто написал знаменитую картину «Звёздная ночь» в 1889 году?', o: ['Винсент ван Гог', 'Клод Моне', 'Поль Гоген', 'Пабло Пикассо'], a: 'Винсент ван Гог', e: '«Звёздная ночь» хранится в Музее современного искусства в Нью-Йорке.' },
-                { c: 'Искусство', q: 'Какой композитор написал цикл из четырёх скрипичных концертов «Времена года»?', o: ['Антонио Вивальди', 'Иоганн Себастьян Бах', 'Вольфганг Амадей Моцарт', 'Людвиг ван Бетховен'], a: 'Антонио Вивальди', e: 'Антонио Вивальди сочинил «Времена года» около 1720 года.' },
-                { c: 'Искусство', q: 'Кто из русских художников написал картину «Девятый вал»?', o: ['Иван Айвазовский', 'Илья Репин', 'Иван Шишкин', 'Архип Куинджи'], a: 'Иван Айвазовский', e: 'Маринист Иван Айвазовский создал «Девятый вал» в 1850 году.' },
-                { c: 'Искусство', q: 'В каком городе находится знаменитый художественный музей Прадо?', o: ['Мадрид', 'Барселона', 'Флоренция', 'Вена'], a: 'Мадрид', e: 'Национальный музей Прадо расположен в столице Испании — Мадриде.' },
-                { c: 'Искусство', q: 'Сколько струн у классической скрипки?', o: ['4', '6', '5', '7'], a: '4', e: 'Классическая скрипка имеет 4 струны, настроенные по квинтам.' },
-
-                // Кино и культура
-                { c: 'Кино', q: 'Какой режиссёр снял научно-фантастический фильм «Интерстеллар» (2014)?', o: ['Кристофер Нолан', 'Дени Вильнёв', 'Ридли Скотт', 'Джеймс Кэмерон'], a: 'Кристофер Нолан', e: 'Научным консультантом фильма выступил физик-теоретик Кип Торн.' },
-                { c: 'Кино', q: 'Какой анимационный фильм студии Pixar стал первым полнометражным фильмом, полностью созданным на компьютере?', o: ['История игрушек', 'Корпорация монстров', 'В поисках Немо', 'Шрек'], a: 'История игрушек', e: '«История игрушек» вышла в прокат в 1995 году.' },
-                { c: 'Кино', q: 'Кто сыграл роль Нео в кинотрилогии «Матрица»?', o: ['Киану Ривз', 'Лоренс Фишбёрн', 'Хьюго Уивинг', 'Брэд Питт'], a: 'Киану Ривз', e: 'Первый фильм «Матрица» вышел на экраны в 1999 году.' },
-                { c: 'Кино', q: 'Какой фильм режиссёра Стэнли Кубрика основан на рассказе Артура Кларка «Часовой»?', o: ['Космическая одиссея 2001 года', 'Заводной апельсин', 'Сияние', 'Солярис'], a: 'Космическая одиссея 2001 года', e: 'Картина 1968 года стала эталоном научной фантастики в кинематографе.' },
-                { c: 'Культура', q: 'Сколько клеток на стандартной шахматной доске?', o: ['64', '81', '100', '49'], a: '64', e: 'Классическая шахматная доска представляет собой сетку 8 на 8 клеток.' },
-                { c: 'Культура', q: 'Какая фигура в шахматах может перепрыгивать через другие фигуры?', o: ['Конь', 'Слон', 'Ладья', 'Ферзь'], a: 'Конь', e: 'Конь ходит буквой «Г» и является единственной фигурой, способной перепрыгивать препятствия.' },
-                { c: 'Культура', q: 'Какой японский вид искусства заключается в складывании фигурок из бумаги без клея и ножниц?', o: ['Оригами', 'Икебана', 'Каллиграфия', 'Бонсай'], a: 'Оригами', e: 'Оригами в переводе с японского означает «сложенная бумага».' },
-                { c: 'Культура', q: 'Какой валютой пользуются в Японии?', o: ['Иена', 'Вона', 'Юань', 'Бат'], a: 'Иена', e: 'Японская иена (JPY) является официальной валютой Японии.' }
-            ];
-
-            /**
-             * Инициализация Telegram WebApp SDK
-             */
-            function initTelegramSDK() {
-                if (!tg) return;
-                try {
-                    tg.ready();
-                    tg.expand();
-
-                    if (typeof tg.disableVerticalSwipes === 'function') {
-                        tg.disableVerticalSwipes();
-                    }
-                    if (typeof tg.setHeaderColor === 'function') {
-                        tg.setHeaderColor('#070b14');
-                    }
-                    if (typeof tg.setBackgroundColor === 'function') {
-                        tg.setBackgroundColor('#070b14');
-                    }
-
-                    const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-                    if (user) {
-                        const parts = [user.first_name, user.last_name].filter(Boolean);
-                        if (parts.length > 0) {
-                            dom.playerName.textContent = parts.join(' ');
-                        } else if (user.username) {
-                            dom.playerName.textContent = '@' + user.username;
+                if (tg.CloudStorage) {
+                    tg.CloudStorage.getItem('used_hashes', (err, val) => {
+                        if (!err && val) {
+                            try {
+                                JSON.parse(val).forEach(h => usedHashes.add(h));
+                            } catch(e){}
                         }
-                    }
-
-                    const applyViewport = () => {
-                        if (tg.viewportStableHeight) {
-                            document.documentElement.style.setProperty('--tg-viewport-stable-height', tg.viewportStableHeight + 'px');
-                        }
-                    };
-                    applyViewport();
-                    tg.onEvent('viewportChanged', applyViewport);
-
-                    state.cloudAvailable = Boolean(tg.CloudStorage);
-                } catch (err) {
-                    console.warn('Telegram SDK init warning:', err);
-                }
-            }
-
-            /**
-             * Нативный тактильный отклик Telegram
-             */
-            function haptic(kind) {
-                if (!tg || !tg.HapticFeedback) return;
-                try {
-                    if (kind === 'success' || kind === 'error' || kind === 'warning') {
-                        tg.HapticFeedback.notificationOccurred(kind);
-                    } else if (kind === 'light') {
-                        tg.HapticFeedback.impactOccurred('light');
-                    }
-                } catch (e) {}
-            }
-
-            /**
-             * Нормализация текста вопроса и устойчивый 32-битный хеш FNV-1a
-             */
-            function normalizeQuestionText(text) {
-                return String(text || '')
-                    .trim()
-                    .toLowerCase()
-                    .replace(/\s+/g, ' ');
-            }
-
-            function hashFNV1a(text) {
-                const normalized = normalizeQuestionText(text);
-                let hash = 0x811c9dc5; // FNV offset basis (2166136261)
-                for (let i = 0; i < normalized.length; i++) {
-                    hash ^= normalized.charCodeAt(i);
-                    hash = Math.imul(hash, 0x01000193); // FNV prime (16777619)
-                }
-                return (hash >>> 0).toString(36);
-            }
-
-            /**
-             * Чтение из localStorage
-             */
-            function readLocalStorageState() {
-                try {
-                    const rawScore = localStorage.getItem(CONFIG.STORAGE_KEYS.SCORE);
-                    const rawPassed = localStorage.getItem(CONFIG.STORAGE_KEYS.PASSED);
-                    const rawHashes = localStorage.getItem(CONFIG.STORAGE_KEYS.HASHES_LOCAL);
-
-                    if (rawScore !== null && !Number.isNaN(parseInt(rawScore, 10))) {
-                        state.score = parseInt(rawScore, 10);
-                    }
-                    if (rawPassed !== null && !Number.isNaN(parseInt(rawPassed, 10))) {
-                        state.passedCount = Math.max(0, parseInt(rawPassed, 10));
-                    }
-                    if (rawHashes) {
-                        const arr = JSON.parse(rawHashes);
-                        if (Array.isArray(arr)) {
-                            arr.forEach(h => {
-                                if (typeof h === 'string' && h.length > 0) state.usedHashes.add(h);
-                            });
-                        }
-                    }
-                } catch (e) {
-                    console.warn('localStorage read error:', e);
-                }
-            }
-
-            /**
-             * Обёртка над Telegram.WebApp.CloudStorage.getItems с защитой по таймауту
-             */
-            function cloudGetItems(keys) {
-                return new Promise((resolve) => {
-                    if (!state.cloudAvailable || !tg || !tg.CloudStorage) {
-                        resolve(null);
-                        return;
-                    }
-                    let settled = false;
-                    const timer = setTimeout(() => {
-                        if (!settled) {
-                            settled = true;
-                            resolve(null);
-                        }
-                    }, CONFIG.CLOUD_TIMEOUT_MS);
-
-                    try {
-                        tg.CloudStorage.getItems(keys, (err, values) => {
-                            if (settled) return;
-                            settled = true;
-                            clearTimeout(timer);
-                            if (err || !values) {
-                                resolve(null);
-                            } else {
-                                resolve(values);
-                            }
-                        });
-                    } catch (e) {
-                        if (!settled) {
-                            settled = true;
-                            clearTimeout(timer);
-                            resolve(null);
-                        }
-                    }
-                });
-            }
-
-            /**
-             * Асинхронная загрузка и объединение данных из Telegram CloudStorage при запуске
-             */
-            async function hydrateFromCloudBeforeStart() {
-                if (!state.cloudAvailable) {
-                    dom.cloudStatusFooter.textContent = 'Локальное хранилище · защита от повторов активна';
-                    return;
-                }
-
-                const baseKeys = [
-                    CONFIG.STORAGE_KEYS.SCORE,
-                    CONFIG.STORAGE_KEYS.PASSED,
-                    CONFIG.STORAGE_KEYS.CHUNK_META
-                ];
-                // Заранее запрашиваем также все возможные чанки за один сетевой вызов
-                const allKeys = [...baseKeys];
-                for (let i = 0; i < CONFIG.MAX_CLOUD_CHUNKS; i++) {
-                    allKeys.push(CONFIG.STORAGE_KEYS.CHUNK_PREFIX + i);
-                }
-
-                const values = await cloudGetItems(allKeys);
-                if (!values) {
-                    dom.cloudStatusFooter.textContent = 'Автономный режим · защита от повторов активна';
-                    return;
-                }
-
-                // Объединяем хеши из всех чанков облака с локальными
-                for (let i = 0; i < CONFIG.MAX_CLOUD_CHUNKS; i++) {
-                    const chunkStr = values[CONFIG.STORAGE_KEYS.CHUNK_PREFIX + i];
-                    if (chunkStr && typeof chunkStr === 'string') {
-                        chunkStr.split(',').forEach(h => {
-                            if (h) state.usedHashes.add(h);
-                        });
-                    }
-                }
-
-                // Синхронизируем счёт и количество пройденных вопросов
-                const cloudPassed = parseInt(values[CONFIG.STORAGE_KEYS.PASSED], 10);
-                const cloudScore = parseInt(values[CONFIG.STORAGE_KEYS.SCORE], 10);
-
-                if (!Number.isNaN(cloudPassed) && cloudPassed > state.passedCount) {
-                    state.passedCount = cloudPassed;
-                    if (!Number.isNaN(cloudScore)) {
-                        state.score = cloudScore;
-                    }
-                } else if (state.passedCount === 0 && !Number.isNaN(cloudScore)) {
-                    state.score = cloudScore;
-                }
-
-                dom.cloudStatusFooter.textContent = 'Синхронизировано с Telegram Cloud · без повторов';
-                persistAllState();
-            }
-
-            /**
-             * Сохранение счёта и хешей в localStorage и чанками по <= 3900 символов в Telegram CloudStorage
-             */
-            function persistAllState() {
-                const hashesArray = Array.from(state.usedHashes);
-
-                // 1. Мгновенная запись в localStorage
-                try {
-                    localStorage.setItem(CONFIG.STORAGE_KEYS.SCORE, String(state.score));
-                    localStorage.setItem(CONFIG.STORAGE_KEYS.PASSED, String(state.passedCount));
-                    localStorage.setItem(CONFIG.STORAGE_KEYS.HASHES_LOCAL, JSON.stringify(hashesArray));
-                } catch (e) {
-                    console.warn('localStorage write error:', e);
-                }
-
-                // 2. Запись в Telegram CloudStorage с разбиением на чанки <= 3900 символов
-                if (!state.cloudAvailable || !tg || !tg.CloudStorage) return;
-
-                try {
-                    const chunks = [];
-                    let currentChunk = '';
-
-                    // Идём с конца (самые свежие хеши в приоритете, если превышен общий лимит чанков)
-                    for (let i = hashesArray.length - 1; i >= 0; i--) {
-                        const token = hashesArray[i];
-                        const nextLen = currentChunk.length === 0 ? token.length : currentChunk.length + 1 + token.length;
-
-                        if (nextLen <= CONFIG.CHUNK_MAX_CHARS) {
-                            currentChunk = currentChunk.length === 0 ? token : (currentChunk + ',' + token);
-                        } else {
-                            chunks.push(currentChunk);
-                            if (chunks.length >= CONFIG.MAX_CLOUD_CHUNKS) {
-                                currentChunk = '';
-                                break;
-                            }
-                            currentChunk = token;
-                        }
-                    }
-                    if (currentChunk.length > 0 && chunks.length < CONFIG.MAX_CLOUD_CHUNKS) {
-                        chunks.push(currentChunk);
-                    }
-
-                    tg.CloudStorage.setItem(CONFIG.STORAGE_KEYS.SCORE, String(state.score));
-                    tg.CloudStorage.setItem(CONFIG.STORAGE_KEYS.PASSED, String(state.passedCount));
-                    tg.CloudStorage.setItem(CONFIG.STORAGE_KEYS.CHUNK_META, String(chunks.length));
-
-                    for (let idx = 0; idx < chunks.length; idx++) {
-                        tg.CloudStorage.setItem(CONFIG.STORAGE_KEYS.CHUNK_PREFIX + idx, chunks[idx]);
-                    }
-                } catch (e) {
-                    console.warn('CloudStorage write error:', e);
-                }
-            }
-
-            /**
-             * Обновление шапки и всплывающая анимация изменения счёта
-             */
-            function renderHeaderStats(delta = 0, tone = 'neutral') {
-                dom.scoreValue.textContent = String(state.score);
-                dom.passedValue.textContent = String(state.passedCount);
-
-                dom.scoreValue.classList.remove('text-emerald-400', 'text-rose-400', 'text-white');
-                if (state.score > 0) {
-                    dom.scoreValue.classList.add('text-emerald-400');
-                } else if (state.score < 0) {
-                    dom.scoreValue.classList.add('text-rose-400');
-                } else {
-                    dom.scoreValue.classList.add('text-white');
-                }
-
-                if (delta !== 0) {
-                    const pill = document.createElement('span');
-                    pill.textContent = delta > 0 ? `+${delta}` : String(delta);
-
-                    let colorClasses = 'bg-rose-500 text-white';
-                    if (tone === 'success' || delta > 0) {
-                        colorClasses = 'bg-emerald-400 text-slate-950';
-                    } else if (tone === 'warning') {
-                        colorClasses = 'bg-amber-400 text-slate-950';
-                    }
-
-                    pill.className = `inline-block px-2 py-0.5 rounded-full text-xs font-extrabold shadow-md animate-score-float ${colorClasses}`;
-                    dom.scoreFloatAnchor.innerHTML = '';
-                    dom.scoreFloatAnchor.appendChild(pill);
-                }
-            }
-
-            /**
-             * Фоновая загрузка вопросов из открытого API викторин (резервный сетевой источник)
-             */
-            async function prefetchRemoteQuestions() {
-                if (state.isFetchingRemote || state.remotePool.length >= 6) return;
-                state.isFetchingRemote = true;
-
-                try {
-                    const controller = new AbortController();
-                    const timeout = setTimeout(() => controller.abort(), 3500);
-
-                    const res = await fetch('https://the-trivia-api.com/v2/questions?limit=10', {
-                        signal: controller.signal
                     });
-                    clearTimeout(timeout);
-
-                    if (!res.ok) return;
-                    const items = await res.json();
-                    if (!Array.isArray(items)) return;
-
-                    const categoryMap = {
-                        science: 'Наука',
-                        history: 'История',
-                        geography: 'География',
-                        film_and_tv: 'Кино',
-                        music: 'Музыка',
-                        sport_and_leisure: 'Спорт',
-                        arts_and_literature: 'Искусство',
-                        general_knowledge: 'Кругозор',
-                        society_and_culture: 'Культура',
-                        food_and_drink: 'Кулинария'
-                    };
-
-                    for (const item of items) {
-                        if (!item || !item.question || !item.question.text || !item.correctAnswer || !Array.isArray(item.incorrectAnswers)) {
-                            continue;
-                        }
-                        const qText = item.question.text.trim();
-                        const h = hashFNV1a(qText);
-                        if (state.usedHashes.has(h)) continue;
-
-                        const allOpts = [item.correctAnswer, ...item.incorrectAnswers.slice(0, 3)];
-                        if (new Set(allOpts).size < 4) continue;
-
-                        state.remotePool.push({
-                            c: categoryMap[item.category] || 'Мировая викторина',
-                            q: qText,
-                            o: allOpts,
-                            a: item.correctAnswer,
-                            e: `Правильный ответ: ${item.correctAnswer}.`,
-                            source: 'Онлайн-база'
-                        });
-                    }
-                } catch (e) {
-                    // Сетевой источник опционален, при отсутствии сети бесшовно работает локальная и процедурная база
-                } finally {
-                    state.isFetchingRemote = false;
                 }
-            }
+            } catch(e) {}
+        }
 
-            /**
-             * Вспомогательная функция перемешивания массива (Фишер — Йетс)
-             */
-            function shuffleArray(arr) {
-                const copy = [...arr];
-                for (let i = copy.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [copy[i], copy[j]] = [copy[j], copy[i]];
+        function saveHistory(hash) {
+            usedHashes.add(hash);
+            try {
+                const arr = Array.from(usedHashes);
+                localStorage.setItem('erudit_used', JSON.stringify(arr));
+                if (tg.CloudStorage) {
+                    tg.CloudStorage.setItem('used_hashes', JSON.stringify(arr.slice(-300)));
                 }
-                return copy;
-            }
+            } catch(e) {}
+        }
 
-            /**
-             * Бесконечный процедурный генератор разнообразных интеллектуальных задач
-             * (арифметика, последовательности, проценты, римские цифры, степени, дни недели, конвертация единиц)
-             */
-            function generateProceduralQuestion() {
-                const generators = [
-                    // 1. Числовые последовательности
-                    () => {
-                        const start = Math.floor(Math.random() * 25) + 2;
-                        const step = Math.floor(Math.random() * 9) + 3;
-                        const accel = Math.floor(Math.random() * 3) + 1;
-                        const seq = [
-                            start,
-                            start + step,
-                            start + step * 2 + accel,
-                            start + step * 3 + accel * 3
-                        ];
-                        const ans = start + step * 4 + accel * 6;
-                        return {
-                            c: 'Логика и ряды',
-                            q: `Какое число должно продолжить последовательность: ${seq.join(', ')}, ...?`,
-                            a: String(ans),
-                            wrongs: [String(ans + step), String(ans - accel - 2), String(ans + accel + 4)],
-                            e: `Разность между соседними элементами увеличивается на ${accel} на каждом шаге.`
-                        };
-                    },
-                    // 2. Проценты от числа
-                    () => {
-                        const percents = [15, 20, 25, 30, 35, 40, 45, 60, 75, 80];
-                        const p = percents[Math.floor(Math.random() * percents.length)];
-                        const base = (Math.floor(Math.random() * 36) + 4) * 20;
-                        const ans = (base * p) / 100;
-                        return {
-                            c: 'Математика',
-                            q: `Чему равны ${p}% от числа ${base}?`,
-                            a: String(ans),
-                            wrongs: [String(ans + 10), String(Math.max(1, ans - 15)), String(Math.round(ans * 1.25))],
-                            e: `${base} × ${p} / 100 = ${ans}.`
-                        };
-                    },
-                    // 3. Римские цифры
-                    () => {
-                        const num = Math.floor(Math.random() * 1850) + 110;
-                        const toRoman = (n) => {
-                            const map = [
-                                [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
-                                [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
-                                [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']
-                            ];
-                            let res = '';
-                            let rem = n;
-                            for (const [val, sym] of map) {
-                                while (rem >= val) {
-                                    res += sym;
-                                    rem -= val;
-                                }
-                            }
-                            return res;
-                        };
-                        const roman = toRoman(num);
-                        return {
-                            c: 'Числа и история',
-                            q: `Какому арабскому числу соответствует римская запись ${roman}?`,
-                            a: String(num),
-                            wrongs: [String(num + 10), String(num - 5), String(num + 50)],
-                            e: `Римское число ${roman} переводится как ${num}.`
-                        };
-                    },
-                    // 4. Степени чисел
-                    () => {
-                        const pairs = [
-                            [2, 7], [2, 8], [2, 9], [2, 10], [2, 11],
-                            [3, 4], [3, 5], [3, 6],
-                            [4, 4], [4, 5],
-                            [5, 3], [5, 4],
-                            [6, 3], [7, 3], [8, 3], [9, 3], [12, 2], [13, 2], [14, 2], [15, 2], [16, 2], [17, 2], [18, 2], [19, 2]
-                        ];
-                        const [base, exp] = pairs[Math.floor(Math.random() * pairs.length)];
-                        const ans = Math.pow(base, exp);
-                        return {
-                            c: 'Арифметика',
-                            q: `Чему равно значение выражения ${base} в степени ${exp}?`,
-                            a: String(ans),
-                            wrongs: [String(ans + base), String(ans - base * 2), String(base * exp * 4)],
-                            e: `${base}^${exp} = ${ans}.`
-                        };
-                    },
-                    // 5. Логика дней недели
-                    () => {
-                        const days = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
-                        const startIdx = Math.floor(Math.random() * 7);
-                        const offset = Math.floor(Math.random() * 65) + 12;
-                        const targetIdx = (startIdx + offset) % 7;
-                        const ans = days[targetIdx];
-                        const otherDays = shuffleArray(days.filter((_, idx) => idx !== targetIdx)).slice(0, 3);
-                        return {
-                            c: 'Логика',
-                            q: `Если сегодня ${days[startIdx]}, какой день недели наступит ровно через ${offset} дн.?`,
-                            a: ans,
-                            wrongs: otherDays,
-                            e: `Остаток от деления ${offset} на 7 равен ${offset % 7}, поэтому наступит ${ans}.`
-                        };
-                    },
-                    // 6. Конвертация величин (время и информация)
-                    () => {
-                        const mode = Math.random() < 0.5;
-                        if (mode) {
-                            const hours = Math.floor(Math.random() * 14) + 3;
-                            const mins = (Math.floor(Math.random() * 11) + 1) * 5;
-                            const ans = hours * 60 + mins;
-                            return {
-                                c: 'Величины',
-                                q: `Сколько всего минут содержится в ${hours} ч. ${mins} мин.?`,
-                                a: `${ans} мин.`,
-                                wrongs: [`${ans + 60} мин.`, `${ans - 30} мин.`, `${hours * 100 + mins} мин.`],
-                                e: `${hours} × 60 + ${mins} = ${ans} минут.`
-                            };
-                        } else {
-                            const gb = Math.floor(Math.random() * 15) + 2;
-                            const ans = gb * 1024;
-                            return {
-                                c: 'Информатика',
-                                q: `Сколько мегабайт (МБ) содержится в ${gb} гигабайтах (ГБ) в двоичной системе (1 ГБ = 1024 МБ)?`,
-                                a: `${ans} МБ`,
-                                wrongs: [`${gb * 1000} МБ`, `${ans + 512} МБ`, `${ans - 256} МБ`],
-                                e: `${gb} × 1024 = ${ans} МБ.`
-                            };
-                        }
-                    },
-                    // 7. Комбинированная арифметика
-                    () => {
-                        const a = Math.floor(Math.random() * 18) + 11;
-                        const b = Math.floor(Math.random() * 9) + 4;
-                        const c = Math.floor(Math.random() * 45) + 15;
-                        const ans = a * b - c;
-                        return {
-                            c: 'Устный счёт',
-                            q: `Вычислите значение выражения: ${a} × ${b} − ${c}`,
-                            a: String(ans),
-                            wrongs: [String(ans + 10), String(ans - 12), String(a * (b - 1) - c)],
-                            e: `${a} × ${b} = ${a * b}; ${a * b} − ${c} = ${ans}.`
-                        };
-                    }
-                ];
+        async function startGame() {
+            await loadHistory();
+            document.getElementById('screen-start').style.display = 'none';
+            document.getElementById('screen-game').style.display = 'flex';
+            nextQuestion();
+        }
 
-                for (let attempt = 0; attempt < 60; attempt++) {
-                    const gen = generators[Math.floor(Math.random() * generators.length)];
-                    const raw = gen();
-                    const h = hashFNV1a(raw.q);
+        function showBadge(text, type) {
+            const badge = document.getElementById('scoreBadge');
+            badge.innerText = text;
+            badge.className = `score-badge show ${type}`;
+            setTimeout(() => {
+                badge.className = 'score-badge';
+            }, 1000);
+        }
 
-                    if (!state.usedHashes.has(h)) {
-                        const uniqueWrongs = Array.from(new Set(raw.wrongs)).filter(w => w !== raw.a);
-                        while (uniqueWrongs.length < 3) {
-                            uniqueWrongs.push(raw.a + ' (' + (uniqueWrongs.length + 1) + ')');
-                        }
-                        return {
-                            c: raw.c,
-                            q: raw.q,
-                            o: shuffleArray([raw.a, ...uniqueWrongs.slice(0, 3)]),
-                            a: raw.a,
-                            e: raw.e,
-                            source: 'Генератор задач'
-                        };
-                    }
-                }
+        function updateScore(delta, badgeText, badgeType) {
+            score += delta;
+            document.getElementById('scoreVal').innerText = score;
+            showBadge(badgeText, badgeType);
+        }
 
-                // Резервный уникальный математический вопрос с гарантированно новым параметром
-                const uniqueN = state.usedHashes.size + Math.floor(Math.random() * 900) + 100;
-                const ans = uniqueN * 7 + 13;
-                return {
-                    c: 'Арифметика',
-                    q: `Чему равен результат вычисления: ${uniqueN} × 7 + 13?`,
-                    o: shuffleArray([String(ans), String(ans + 7), String(ans - 13), String(ans + 21)]),
-                    a: String(ans),
-                    e: `${uniqueN} × 7 + 13 = ${ans}.`,
-                    source: 'Генератор задач'
+        function nextQuestion() {
+            clearInterval(timerInterval);
+            isAnswerLocked = false;
+            timeLeft = maxTime;
+            updateTimerDisplay();
+
+            // Ищем неиспользованный вопрос
+            let available = questionsPool.filter(q => !usedHashes.has(getHash(q.q)));
+
+            if (available.length === 0) {
+                // Генератор уникальных задач на лету
+                const randNum1 = Math.floor(Math.random() * 50) + 10;
+                const randNum2 = Math.floor(Math.random() * 50) + 10;
+                const sum = randNum1 + randNum2;
+                currentQuestion = {
+                    q: `Сколько будет ${randNum1} + ${randNum2}?`,
+                    options: [sum, sum + 2, sum - 3, sum + 5].sort(() => Math.random() - 0.5),
+                    answer: 0
                 };
-            }
-
-            /**
-             * Выбор следующего гарантированно неповторяющегося вопроса
-             */
-            function pickNextUniqueQuestion() {
-                // 1. Ищем непройденные вопросы во встроенной базе (88 вопросов)
-                const unusedBuiltin = BUILTIN_QUESTIONS.filter(item => !state.usedHashes.has(hashFNV1a(item.q)));
-                if (unusedBuiltin.length > 0) {
-                    const chosen = unusedBuiltin[Math.floor(Math.random() * unusedBuiltin.length)];
-                    return {
-                        c: chosen.c,
-                        q: chosen.q,
-                        o: shuffleArray(chosen.o),
-                        a: chosen.a,
-                        e: chosen.e,
-                        source: 'База знаний'
-                    };
-                }
-
-                // 2. Проверяем предзагруженные вопросы из открытого API
-                while (state.remotePool.length > 0) {
-                    const candidate = state.remotePool.shift();
-                    if (!state.usedHashes.has(hashFNV1a(candidate.q))) {
-                        return {
-                            ...candidate,
-                            o: shuffleArray(candidate.o)
-                        };
-                    }
-                }
-
-                // 3. Бесконечный процедурный генератор уникальных задач
-                return generateProceduralQuestion();
-            }
-
-            /**
-             * Управление 10-секундным таймером
-             */
-            function stopTimer() {
-                if (state.rafId !== null) {
-                    cancelAnimationFrame(state.rafId);
-                    state.rafId = null;
-                }
-            }
-
-            function startTimer() {
-                stopTimer();
-                state.deadline = performance.now() + CONFIG.TIME_LIMIT_MS;
-
-                const tick = (now) => {
-                    const leftMs = state.deadline - now;
-                    if (leftMs <= 0) {
-                        dom.timerText.textContent = '0.0с';
-                        dom.timerBar.style.width = '0%';
-                        onTimeout();
-                        return;
-                    }
-
-                    const seconds = (leftMs / 1000).toFixed(1);
-                    const ratio = (leftMs / CONFIG.TIME_LIMIT_MS) * 100;
-
-                    dom.timerText.textContent = `${seconds}с`;
-                    dom.timerBar.style.width = `${ratio}%`;
-
-                    if (leftMs <= 3000) {
-                        dom.timerPill.classList.remove('bg-slate-950/90', 'border-slate-800', 'text-indigo-300');
-                        dom.timerPill.classList.add('bg-rose-500/20', 'border-rose-500/60', 'text-rose-300');
-                        dom.timerBar.classList.remove('from-indigo-500', 'via-sky-400', 'to-cyan-300');
-                        dom.timerBar.classList.add('bg-rose-500');
-                    } else {
-                        dom.timerPill.classList.remove('bg-rose-500/20', 'border-rose-500/60', 'text-rose-300');
-                        dom.timerPill.classList.add('bg-slate-950/90', 'border-slate-800', 'text-indigo-300');
-                        dom.timerBar.classList.remove('bg-rose-500');
-                        dom.timerBar.classList.add('from-indigo-500', 'via-sky-400', 'to-cyan-300');
-                    }
-
-                    state.rafId = requestAnimationFrame(tick);
-                };
-
-                state.rafId = requestAnimationFrame(tick);
-            }
-
-            /**
-             * Показ нового вопроса и НЕМЕДЛЕННАЯ фиксация его хеша в хранилищах
-             */
-            function showNextQuestion() {
-                stopTimer();
-                state.isLocked = false;
-
-                const question = pickNextUniqueQuestion();
-                state.currentQuestion = question;
-
-                // КРИТИЧЕСКИ ВАЖНО: записываем хеш сразу в момент показа вопроса
-                const qHash = hashFNV1a(question.q);
-                state.usedHashes.add(qHash);
-                persistAllState();
-
-                // Фоново подгружаем сетевой пул, если основная база подходит к концу
-                if (BUILTIN_QUESTIONS.length - state.usedHashes.size < 15) {
-                    prefetchRemoteQuestions();
-                }
-
-                // Отрисовка интерфейса вопроса
-                dom.categoryBadge.textContent = question.c;
-                dom.sourceTag.textContent = question.source || 'Без повторов';
-                dom.questionTitle.textContent = question.q;
-
-                dom.answersList.innerHTML = '';
-                const letters = ['A', 'B', 'C', 'D'];
-
-                question.o.forEach((optionText, index) => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.dataset.value = optionText;
-                    btn.className = 'option-btn w-full p-3.5 sm:p-4 rounded-2xl bg-slate-900/75 border border-slate-800 text-slate-100 font-medium text-sm sm:text-base text-left flex items-center gap-3 shadow-sm';
-
-                    const badge = document.createElement('span');
-                    badge.className = 'w-7 h-7 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 text-xs font-bold flex items-center justify-center shrink-0 transition-colors';
-                    badge.textContent = letters[index] || String(index + 1);
-
-                    const label = document.createElement('span');
-                    label.className = 'flex-1 leading-snug';
-                    label.textContent = optionText;
-
-                    btn.appendChild(badge);
-                    btn.appendChild(label);
-
-                    btn.addEventListener('click', () => onSelectAnswer(btn, optionText));
-                    dom.answersList.appendChild(btn);
-                });
-
-                dom.resultBar.classList.add('hidden');
-                dom.skipBar.classList.remove('hidden');
-                dom.skipBtn.disabled = false;
-
-                dom.syncScreen.classList.add('hidden');
-                dom.quizScreen.classList.remove('hidden');
-                dom.quizScreen.classList.remove('animate-enter');
-                void dom.quizScreen.offsetWidth;
-                dom.quizScreen.classList.add('animate-enter');
-
-                startTimer();
-            }
-
-            /**
-             * Подсветка вариантов после завершения раунда
-             */
-            function revealAnswers(selectedBtn, selectedValue) {
-                const correctValue = state.currentQuestion.a;
-                const buttons = dom.answersList.querySelectorAll('button');
-
-                buttons.forEach(btn => {
-                    btn.disabled = true;
-                    const val = btn.dataset.value;
-                    const badge = btn.querySelector('span:first-child');
-
-                    if (val === correctValue) {
-                        btn.classList.remove('bg-slate-900/75', 'border-slate-800', 'text-slate-100');
-                        btn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-100', 'shadow-md', 'shadow-emerald-950/40');
-                        if (badge) {
-                            badge.classList.remove('bg-slate-950', 'border-slate-800', 'text-slate-400');
-                            badge.classList.add('bg-emerald-500', 'border-emerald-400', 'text-slate-950');
-                        }
-                    } else if (selectedBtn && btn === selectedBtn && selectedValue !== correctValue) {
-                        btn.classList.remove('bg-slate-900/75', 'border-slate-800', 'text-slate-100');
-                        btn.classList.add('bg-rose-500/20', 'border-rose-500', 'text-rose-100', 'shadow-md', 'shadow-rose-950/40');
-                        if (badge) {
-                            badge.classList.remove('bg-slate-950', 'border-slate-800', 'text-slate-400');
-                            badge.classList.add('bg-rose-500', 'border-rose-400', 'text-white');
-                        }
-                    } else {
-                        btn.classList.add('opacity-45');
-                    }
-                });
-            }
-
-            /**
-             * Обработка клика по варианту ответа (+1 верно / -2 ошибка)
-             */
-            function onSelectAnswer(btn, chosenValue) {
-                if (state.isLocked || !state.currentQuestion) return;
-                state.isLocked = true;
-                stopTimer();
-
-                const isCorrect = chosenValue === state.currentQuestion.a;
-                const delta = isCorrect ? CONFIG.POINTS_CORRECT : CONFIG.POINTS_WRONG;
-
-                haptic(isCorrect ? 'success' : 'error');
-
-                state.score += delta;
-                state.passedCount += 1;
-                persistAllState();
-                renderHeaderStats(delta, isCorrect ? 'success' : 'error');
-
-                revealAnswers(btn, chosenValue);
-
-                const statusHtml = isCorrect
-                    ? '<span class="text-emerald-400 font-bold">Верно! +1 балл.</span> '
-                    : '<span class="text-rose-400 font-bold">Неверно! -2 балла.</span> ';
-                const infoHtml = `<span class="text-slate-300">${state.currentQuestion.e}</span>`;
-
-                dom.resultMessage.innerHTML = statusHtml + infoHtml;
-                dom.skipBar.classList.add('hidden');
-                dom.resultBar.classList.remove('hidden');
-            }
-
-            /**
-             * Обработка истечения 10 секунд (-1 балл)
-             */
-            function onTimeout() {
-                if (state.isLocked || !state.currentQuestion) return;
-                state.isLocked = true;
-                stopTimer();
-
-                haptic('warning');
-
-                const delta = CONFIG.POINTS_TIMEOUT;
-                state.score += delta;
-                state.passedCount += 1;
-                persistAllState();
-                renderHeaderStats(delta, 'warning');
-
-                revealAnswers(null, null);
-
-                const statusHtml = '<span class="text-amber-400 font-bold">Время вышло! -1 балл.</span> ';
-                const infoHtml = `<span class="text-slate-300">${state.currentQuestion.e}</span>`;
-
-                dom.resultMessage.innerHTML = statusHtml + infoHtml;
-                dom.skipBar.classList.add('hidden');
-                dom.resultBar.classList.remove('hidden');
-            }
-
-            /**
-             * Обработка ручного пропуска вопроса (-1 балл)
-             */
-            function onSkipQuestion() {
-                if (state.isLocked || !state.currentQuestion) return;
-                state.isLocked = true;
-                stopTimer();
-                dom.skipBtn.disabled = true;
-
-                haptic('light');
-
-                const delta = CONFIG.POINTS_SKIP;
-                state.score += delta;
-                state.passedCount += 1;
-                persistAllState();
-                renderHeaderStats(delta, 'warning');
-
-                showNextQuestion();
-            }
-
-            /**
-             * Полный сброс прогресса и истории вопросов
-             */
-            function resetAllProgress() {
-                stopTimer();
-                haptic('light');
-
-                try {
-                    localStorage.removeItem(CONFIG.STORAGE_KEYS.SCORE);
-                    localStorage.removeItem(CONFIG.STORAGE_KEYS.PASSED);
-                    localStorage.removeItem(CONFIG.STORAGE_KEYS.HASHES_LOCAL);
-                } catch (e) {}
-
-                if (state.cloudAvailable && tg && tg.CloudStorage) {
-                    try {
-                        const keysToRemove = [
-                            CONFIG.STORAGE_KEYS.SCORE,
-                            CONFIG.STORAGE_KEYS.PASSED,
-                            CONFIG.STORAGE_KEYS.CHUNK_META
-                        ];
-                        for (let i = 0; i < CONFIG.MAX_CLOUD_CHUNKS; i++) {
-                            keysToRemove.push(CONFIG.STORAGE_KEYS.CHUNK_PREFIX + i);
-                        }
-                        tg.CloudStorage.removeItems(keysToRemove);
-                    } catch (e) {}
-                }
-
-                state.score = 0;
-                state.passedCount = 0;
-                state.usedHashes.clear();
-                state.currentQuestion = null;
-                state.isLocked = false;
-
-                dom.scoreFloatAnchor.innerHTML = '';
-                renderHeaderStats(0, 'neutral');
-                closeResetModal();
-                showNextQuestion();
-            }
-
-            function openResetModal() {
-                haptic('light');
-                dom.resetModal.classList.remove('hidden');
-                dom.resetModal.classList.add('flex');
-            }
-
-            function closeResetModal() {
-                haptic('light');
-                dom.resetModal.classList.add('hidden');
-                dom.resetModal.classList.remove('flex');
-            }
-
-            // Привязка обработчиков событий
-            dom.skipBtn.addEventListener('click', onSkipQuestion);
-            dom.nextBtn.addEventListener('click', () => {
-                haptic('light');
-                showNextQuestion();
-            });
-            dom.resetOpenBtn.addEventListener('click', openResetModal);
-            dom.resetCancelBtn.addEventListener('click', closeResetModal);
-            dom.resetConfirmBtn.addEventListener('click', resetAllProgress);
-            dom.resetModal.addEventListener('click', (e) => {
-                if (e.target === dom.resetModal) closeResetModal();
-            });
-
-            // Точка входа приложения: строгая асинхронная инициализация до показа первого вопроса
-            async function init() {
-                initTelegramSDK();
-                readLocalStorageState();
-                renderHeaderStats(0, 'neutral');
-
-                // Ожидаем синхронизацию с Telegram CloudStorage (макс. 1.5 сек) перед отрисовкой 1-го вопроса
-                await hydrateFromCloudBeforeStart();
-                renderHeaderStats(0, 'neutral');
-
-                showNextQuestion();
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
+                currentQuestion.answer = currentQuestion.options.indexOf(sum);
             } else {
-                init();
+                currentQuestion = available[Math.floor(Math.random() * available.length)];
             }
-        })();
+
+            saveHistory(getHash(currentQuestion.q));
+
+            // Рендер вопроса
+            document.getElementById('questionText').innerText = currentQuestion.q;
+            const optionsContainer = document.getElementById('optionsList');
+            optionsContainer.innerHTML = '';
+
+            currentQuestion.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectAnswer(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            const fill = document.getElementById('progressBar');
+            fill.style.width = '100%';
+            fill.style.backgroundColor = 'var(--accent)';
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timerVal').innerText = timeLeft + 'с';
+            const fill = document.getElementById('progressBar');
+            fill.style.width = `${(timeLeft / maxTime) * 100}%`;
+            if (timeLeft <= 5) {
+                fill.style.backgroundColor = 'var(--error)';
+            }
+        }
+
+        function selectAnswer(selectedIndex, btnElement) {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+            clearInterval(timerInterval);
+
+            const buttons = document.querySelectorAll('.option-btn');
+            const correctIndex = currentQuestion.answer;
+
+            if (selectedIndex === correctIndex) {
+                btnElement.classList.add('correct');
+                updateScore(1, '+1', 'plus');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                btnElement.classList.add('incorrect');
+                buttons[correctIndex].classList.add('correct');
+                updateScore(-2, '-2', 'minus-two');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            }
+
+            setTimeout(nextQuestion, 1200);
+        }
+
+        function handleTimeout() {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons[currentQuestion.answer].classList.add('correct');
+
+            updateScore(-1, '-1', 'minus-one');
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
+
+            setTimeout(nextQuestion, 1200);
+        }
+
+        function skipQuestion() {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+            clearInterval(timerInterval);
+
+            updateScore(-1, '-1', 'minus-one');
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+            nextQuestion();
+        }
     </script>
 </body>
 </html>
