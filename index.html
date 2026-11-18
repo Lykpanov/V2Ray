@@ -1,452 +1,702 @@
+```html
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
-    <meta charset="utf-8">
-    <link rel="icon" href="https://flat447.github.io/v2ray-lists-site/favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>V2Ray Lists - Telegram Mini App</title>
-    <!-- Telegram WebApp SDK -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Эрудит Онлайн — Telegram Mini App</title>
+    <!-- Официальный SDK Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+<!-- ... existing code ... -->
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #0f172a);
-            --card-bg: var(--tg-theme-secondary-bg-color, #1e293b);
-            --text-color: var(--tg-theme-text-color, #f8fafc);
-            --text-muted: #94a3b8;
-            --accent: var(--tg-theme-button-color, #38bdf8);
-            --accent-text: var(--tg-theme-button-text-color, #0f172a);
-            --border-color: #334155;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --tg-bg: #090d16;
+            --tg-secondary-bg: rgba(17, 24, 39, 0.78);
+            --tg-text: #f8fafc;
+            --tg-hint: #94a3b8;
+            --tg-button: #4f46e5;
+            --tg-button-text: #ffffff;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
         body {
-            font-family: 'Roboto Flex', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            padding-bottom: 2rem;
+            background-color: var(--tg-bg);
+            background-image: 
+                radial-gradient(at 15% 10%, rgba(79, 70, 229, 0.14) 0px, transparent 50%),
+                radial-gradient(at 85% 90%, rgba(14, 165, 233, 0.12) 0px, transparent 50%);
+            min-height: 100vh;
+            min-height: var(--tg-viewport-stable-height, 100dvh);
+            color: var(--tg-text);
+            padding-top: max(12px, var(--safe-top));
+            padding-bottom: max(14px, var(--safe-bottom));
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        header {
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0.75rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        .glass-panel {
+            background: var(--tg-secondary-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
         }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
+        .option-btn {
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation;
         }
-        .logo span.material-symbols-outlined {
-            color: var(--accent);
+        .option-btn:not(:disabled):hover {
+            background: rgba(51, 65, 85, 0.65);
+            border-color: rgba(99, 102, 241, 0.5);
         }
-        nav {
-            display: flex;
-            gap: 0.5rem;
-        }
-        nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            padding: 0.4rem 0.75rem;
-            border-radius: 999px;
-            transition: background-color 0.2s, color 0.2s;
-        }
-        nav a:hover {
-            background-color: var(--border-color);
-            color: var(--text-color);
-        }
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .icon-btn {
-            display: grid;
-            place-items: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: var(--border-color);
-            color: var(--text-color);
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        .icon-btn:hover {
-            opacity: 0.8;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-        .hero {
-            text-align: center;
-            padding: 2rem 0;
-        }
-        .chip {
-            display: inline-block;
-            background-color: var(--border-color);
-            color: var(--accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-        }
-        h1 {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-        }
-        .hero p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .step-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .step-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            background-color: var(--border-color);
-            color: var(--accent);
-        }
-        .step-card h3 {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        .step-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        section {
-            margin-bottom: 2.5rem;
-        }
-        h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1rem;
-        }
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-        .card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            width: 100%;
-            background-color: var(--accent);
-            color: var(--accent-text);
-            border: none;
-            padding: 0.65rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        .btn:hover {
-            opacity: 0.9;
-        }
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-        }
-        .btn-outline:hover {
-            background-color: var(--border-color);
-        }
-        ol {
-            margin: 0;
-            padding-left: 1.2rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-        }
-        ol li {
-            line-height: 1.4;
-        }
-        footer {
-            text-align: center;
-            padding: 2rem 0;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
+        .option-btn:not(:disabled):active {
+            transform: scale(0.985);
+            background: rgba(79, 70, 229, 0.22);
         }
     </style>
 </head>
-<body>
-    <div id="top"></div>
-    <header>
-        <a href="#top" class="logo">
-            <span class="material-symbols-outlined">shield</span>
-            <span>V2Ray Lists</span>
-        </a>
-        <nav class="hidden md:flex">
-            <a href="#subs">Конфиги</a>
-            <a href="#guides">Гайды</a>
-            <a href="#proxy">Прокси</a>
-        </nav>
-        <div class="header-actions">
-            <a href="https://t.me/ria_glavnoe" class="icon-btn" target="_blank" rel="noopener" aria-label="Telegram Channel">
-                <span class="material-symbols-outlined">send</span>
-            </a>
+<body class="font-sans antialiased selection:bg-indigo-500/30 selection:text-indigo-200 flex flex-col justify-between select-none">
+
+    <!-- Компактная верхняя панель статистики для Telegram Mini App -->
+    <header class="w-full max-w-xl mx-auto px-3.5 pt-1 pb-2">
+        <div class="glass-panel rounded-2xl p-3 sm:px-5 flex items-center justify-between gap-2.5">
+            <!-- Профиль игрока / Статус -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <h1 id="player-title" class="text-sm sm:text-base font-bold tracking-tight text-white truncate">Эрудит Онлайн</h1>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1.5 truncate">
+                        <span id="network-indicator" class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0"></span>
+                        <span id="network-status-text" class="truncate">Сетевая база активна</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Счетчики и сброс -->
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <!-- Текущий счет -->
+                <div class="relative bg-slate-900/85 border border-slate-800 rounded-xl px-3 py-1.5 text-center min-w-[68px]">
+                    <span class="block text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Счёт</span>
+                    <span id="score-display" class="text-base sm:text-lg font-extrabold text-white transition-colors duration-300 tabular-nums">0</span>
+                    <!-- Контейнер для всплывающей анимации +1 / -1 -->
+                    <div id="score-delta-container" class="pointer-events-none absolute -top-3 right-1"></div>
+                </div>
+
+                <!-- Пройдено уникальных вопросов -->
+                <div class="bg-slate-900/85 border border-slate-800 rounded-xl px-3 py-1.5 text-center min-w-[68px]">
+                    <span class="block text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Вопросов</span>
+                    <span id="answered-display" class="text-base sm:text-lg font-bold text-slate-200 tabular-nums">0</span>
+                </div>
+
+                <!-- Кнопка сброса истории -->
+                <button id="open-reset-modal-btn" title="Очистить историю и сбросить прогресс" class="p-2.5 rounded-xl bg-slate-800/75 active:bg-rose-950/70 text-slate-400 hover:text-rose-300 border border-slate-700/70 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <section class="hero">
-            <div class="chip">Telegram Mini App</div>
-            <h1>Бесплатные VPN конфигурации и MTProxy</h1>
-            <p>Подписки V2Ray, гайды по клиентам и прокси для Telegram. Выбери конфиг, подключись и обходи блокировки :)</p>
-        </section>
+    <!-- Основная игровая область -->
+    <main class="w-full max-w-xl mx-auto px-3.5 py-1.5 flex-1 flex flex-col justify-center">
+        
+        <!-- Информационная плашка правил -->
+        <div class="flex items-center justify-between gap-1.5 text-[11px] text-slate-400 mb-2.5 px-1 flex-wrap">
+            <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> +1 верно
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> -2 ошибка
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> -1 таймер/пропуск
+                </span>
+            </div>
+            <span id="queue-status" class="text-slate-500 hidden sm:inline">Уникальные вопросы</span>
+        </div>
 
-        <section class="steps-grid">
-            <div class="step-card">
-                <div class="step-icon"><span class="material-symbols-outlined">content_copy</span></div>
-                <h3>Скопируй</h3>
-                <p>Скопируй ссылку на подписку ниже одним нажатием.</p>
+        <!-- Карточка вопроса -->
+        <div id="quiz-card" class="glass-panel rounded-3xl p-5 sm:p-7 relative overflow-hidden">
+            
+            <!-- Состояние загрузки (Скелетон) -->
+            <div id="loading-state" class="hidden py-6 space-y-5">
+                <div class="flex items-center justify-between">
+                    <div class="h-5 w-24 bg-slate-800 rounded-full animate-pulse"></div>
+                    <div class="h-4 w-28 bg-slate-800 rounded animate-pulse"></div>
+                </div>
+                <div class="space-y-2.5">
+                    <div class="h-5 w-full bg-slate-800 rounded-lg animate-pulse"></div>
+                    <div class="h-5 w-4/5 bg-slate-800 rounded-lg animate-pulse"></div>
+                </div>
+                <div class="grid grid-cols-1 gap-3 pt-1">
+                    <div class="h-13 bg-slate-800/80 rounded-2xl animate-pulse"></div>
+                    <div class="h-13 bg-slate-800/80 rounded-2xl animate-pulse"></div>
+                    <div class="h-13 bg-slate-800/80 rounded-2xl animate-pulse"></div>
+                    <div class="h-13 bg-slate-800/80 rounded-2xl animate-pulse"></div>
+                </div>
+                <p id="loading-message" class="text-center text-xs text-indigo-300/80 pt-1 animate-pulse">
+                    Загрузка уникальных вопросов из сети...
+                </p>
             </div>
-            <div class="step-card">
-                <div class="step-icon"><span class="material-symbols-outlined">content_paste</span></div>
-                <h3>Вставь</h3>
-                <p>Открой свой VPN-клиент и вставь ссылку в поле подписки.</p>
-            </div>
-            <div class="step-card">
-                <div class="step-icon"><span class="material-symbols-outlined">bolt</span></div>
-                <h3>Подключись</h3>
-                <p>Выбери самый быстрый конфиг и нажми подключить.</p>
-            </div>
-        </section>
+<!-- ... existing code ... -->
+            <!-- Активный вопрос -->
+            <div id="question-content" class="animate-fade-in">
+                <!-- Верхняя строка карточки: Категория, номер и таймер -->
+                <div class="flex items-center justify-between gap-2 mb-2.5">
+                    <span id="question-category" class="px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-indigo-500/15 text-indigo-300 border border-indigo-500/25 truncate max-w-[60%]">
+                        Категория
+                    </span>
+                    <div class="flex items-center gap-2.5 ml-auto shrink-0">
+                        <span id="question-source-badge" class="text-[11px] text-slate-500 font-medium hidden sm:inline">
+                            Вопрос #1
+                        </span>
+                        <!-- Цифровой индикатор 10-секундного таймера -->
+                        <div id="timer-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 text-xs font-bold text-indigo-300 tabular-nums transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span id="timer-seconds">10.0с</span>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Конфиги -->
-        <section id="subs">
-            <h2>V2Ray конфиги</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-title">
-                        <span class="material-symbols-outlined text-primary">hub</span>
-                        <span>BLACK_FULL</span>
-                    </div>
-                    <p>Полный набор серверов для максимальной производительности.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_full.txt')">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span> Копировать ссылку
-                    </button>
+                <!-- Плавная шкала прогресса 10-секундного таймера -->
+                <div class="w-full h-1.5 bg-slate-800/90 rounded-full overflow-hidden mb-5">
+                    <div id="timer-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-sky-400 rounded-full" style="width: 100%;"></div>
                 </div>
-                <div class="card">
-                    <div class="card-title">
-                        <span class="material-symbols-outlined text-primary">hub</span>
-                        <span>BLACK_LTE</span>
-                    </div>
-                    <p>Оптимизированные конфигурации для мобильного интернета.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/black_lte.txt')">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span> Копировать ссылку
-                    </button>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        <span class="material-symbols-outlined text-primary">hub</span>
-                        <span>WHITE_FULL</span>
-                    </div>
-                    <p>Альтернативная база серверов повышенной стабильности.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_full.txt')">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span> Копировать ссылку
-                    </button>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        <span class="material-symbols-outlined text-primary">hub</span>
-                        <span>WHITE_LITE</span>
-                    </div>
-                    <p>Легкая версия конфигураций для слабого соединения.</p>
-                    <button class="btn" onclick="copyConfig('https://raw.githubusercontent.com/FLAT447/v2ray-lists/main/white_lite.txt')">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span> Копировать ссылку
-                    </button>
-                </div>
-            </div>
-        </section>
 
-        <!-- Гайды -->
-        <section id="guides">
-            <h2>Гайды на клиенты</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Android / v2rayNG</h3>
-                    <ol>
-                        <li>Скачайте и установите v2rayNG.</li>
-                        <li>Скопируйте ссылку на конфиг из списка выше.</li>
-                        <li>Откройте v2rayNG: сверху нажмите плюс и выберите импорт из буфера обмена.</li>
-                        <li>Проверьте задержку профилей и отсортируйте по результатам.</li>
-                        <li>Выберите сервер с наименьшим пингом и подключитесь.</li>
-                    </ol>
-                    <a href="https://github.com/2dust/v2rayNG/releases/download/2.3.2/v2rayNG_2.3.2-universal.apk" class="btn btn-outline" target="_blank" rel="noopener">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Скачать v2rayNG
-                    </a>
-                </div>
-                <div class="card">
-                    <h3>Windows / Linux / Throne</h3>
-                    <ol>
-                        <li>Скачайте Throne для своей системы.</li>
-                        <li>Скопируйте ссылку на конфиг в буфер обмена.</li>
-                        <li>В программе: Профили -> Добавить профиль из буфера обмена.</li>
-                        <li>Выполните тест задержки и включите режим TUN.</li>
-                        <li>Запустите конфиг с наименьшим пингом.</li>
-                    </ol>
-                    <a href="https://github.com/throneproj/Throne/releases/download/1.2.2/Throne-1.2.2-windows64.zip" class="btn btn-outline" target="_blank" rel="noopener">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Скачать Throne
-                    </a>
-                </div>
-                <div class="card">
-                    <h3>iOS / macOS / Streisand</h3>
-                    <ol>
-                        <li>Установите Streisand из App Store.</li>
-                        <li>Скопируйте ссылку на подписку.</li>
-                        <li>Откройте приложение и нажмите плюс для импорта из буфера.</li>
-                        <li>Проверьте задержку и активируйте подключение.</li>
-                    </ol>
-                    <a href="https://apps.apple.com/us/app/streisand/id6450534064" class="btn btn-outline" target="_blank" rel="noopener">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Скачать Streisand
-                    </a>
-                </div>
-            </div>
-        </section>
+                <!-- Текст вопроса -->
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold text-white leading-snug mb-5">
+                    Загрузка вопроса...
+                </h2>
 
-        <!-- Прокси -->
-        <section id="proxy">
-            <h2>Прокси для Telegram</h2>
-            <div class="grid" style="margin-bottom: 1.5rem;">
-                <div class="card">
-                    <div class="card-title">
-                        <span class="material-symbols-outlined">public</span>
-                        <span>BLACKLIST</span>
-                    </div>
-                    <p>Защищенные прокси-списки для мессенджера.</p>
-                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span> Скопировать прокси
+                <!-- Сетка вариантов ответа (удобно нажимать одной рукой) -->
+                <div id="options-grid" class="grid grid-cols-1 gap-2.5 sm:gap-3">
+                    <!-- Кнопки вариантов генерируются через JS -->
+                </div>
+
+                <!-- Панель действий во время ответа (Пропуск вопроса за -1 балл) -->
+                <div id="active-actions-bar" class="mt-5 pt-3.5 border-t border-slate-800/60 flex items-center justify-between gap-2">
+                    <span class="text-xs text-slate-500">Затрудняетесь ответить?</span>
+                    <button id="skip-question-btn" type="button" class="px-3.5 py-2 rounded-xl bg-amber-500/10 active:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-semibold transition-all flex items-center gap-1.5">
+                        <span>Пропустить (-1 балл)</span>
                     </button>
                 </div>
-                <div class="card">
-                    <div class="card-title">
-                        <span class="material-symbols-outlined">public</span>
-                        <span>WHITELIST</span>
+
+                <!-- Нижняя панель после ответа или истечения времени -->
+                <div id="feedback-bar" class="hidden mt-5 pt-4 border-t border-slate-800/80 flex flex-col gap-3.5 animate-fade-in">
+                    <div id="feedback-text" class="text-xs sm:text-sm font-medium text-slate-300 leading-relaxed">
+                        <!-- Пояснение или статус ответа -->
                     </div>
-                    <p>Альтернативный пул прокси-соединений.</p>
-                    <button class="btn" onclick="copyConfig('https://t.me/proxy?server=example&port=443&secret=example')">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span> Скопировать прокси
+                    <button id="next-question-btn" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2">
+                        <span>Следующий вопрос</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
+        </div>
+    </main>
 
-            <!-- Гайд по прокси -->
-            <div class="card">
-                <h3>Как подключить прокси в Telegram</h3>
-                <p style="font-weight: 600; color: var(--text-color); margin-top: 0.25rem;">На ПК:</p>
-                <ol>
-                    <li>Откройте Telegram и перейдите в Настройки (три полоски слева).</li>
-                    <li>Выберите «Данные и хранилище» -> «Прокси».</li>
-                    <li>Нажмите «Добавить прокси» и укажите параметры SOCKS5, HTTP или MTProto.</li>
-                </ol>
-                <p style="font-weight: 600; color: var(--text-color); margin-top: 0.5rem;">На телефоне:</p>
-                <ol>
-                    <li>Откройте Настройки -> «Данные и хранилище» -> «Прокси».</li>
-                    <li>Добавьте прокси (для MTProto поддерживается прямая ссылка-приглашение).</li>
-                    <li>Включите тумблер использования прокси.</li>
-                </ol>
-            </div>
-        </section>
-
-        <footer>
-            <div>Канал проекта: <a href="https://t.me/ria_glavnoe" target="_blank" rel="noopener">РИА Главное</a></div>
-            <div>Исходный код: <a href="https://github.com/FLAT447/v2ray-lists-site" target="_blank" rel="noopener">V2Ray Lists Site</a></div>
-        </footer>
-    </div>
-
+    <!-- Компактный подвал -->
+    <footer class="w-full max-w-xl mx-auto px-4 pt-2 pb-1 text-center text-[11px] text-slate-500">
+        <span id="storage-badge">Вопросы сохраняются в истории и никогда не повторяются</span>
+    </footer>
+<!-- ... existing code ... -->
     <script>
-        // Инициализация Telegram WebApp SDK
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
+        /**
+         * Конфигурация и ключи постоянного хранилища localStorage и Telegram CloudStorage.
+         */
+        const STORAGE_KEYS = {
+            SCORE: 'ru_trivia_score_v1',
+            ANSWERED_COUNT: 'ru_trivia_answered_v1',
+            ASKED_HASHES: 'ru_trivia_asked_hashes_v1',
+            ASKED_TITLES: 'ru_trivia_asked_titles_v1',
+            QUESTION_QUEUE: 'ru_trivia_queue_v1',
+            OPENTDB_TOKEN: 'ru_trivia_opentdb_token_v1'
+        };
 
-        function copyConfig(url) {
-            navigator.clipboard.writeText(url).then(() => {
-                if (window.Telegram.WebApp && window.Telegram.WebApp.showAlert) {
-                    window.Telegram.WebApp.showAlert('Ссылка успешно скопирована :)');
-                } else {
-                    alert('Ссылка скопирована: ' + url);
+        const apiKey = ""; // Ключ среды выполнения для Gemini API
+        const GEMINI_MODEL = "gemini-3-flash-preview";
+        const QUESTION_TIME_LIMIT_MS = 10000; // 10 секунд на каждый вопрос
+        const CORRECT_POINTS = 1;             // +1 балл за правильный ответ
+        const WRONG_ANSWER_PENALTY = -2;      // -2 балла за неправильный ответ
+        const TIMEOUT_PENALTY = -1;           // -1 балл за истечение времени
+        const SKIP_PENALTY = -1;              // -1 балл за ручной пропуск
+
+        // Инициализация объекта Telegram WebApp
+        const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+
+        // Глобальное состояние приложения
+        let state = {
+            score: 0,
+            answeredCount: 0,
+            askedHashes: new Set(),
+            askedTitles: [],
+            queue: [],
+            currentQuestion: null,
+            isAnswered: false,
+            isFetching: false,
+            timerRafId: null,
+            timerDeadline: 0
+        };
+
+        // Элементы DOM
+        const els = {
+            playerTitle: document.getElementById('player-title'),
+            storageBadge: document.getElementById('storage-badge'),
+            scoreDisplay: document.getElementById('score-display'),
+            scoreDeltaContainer: document.getElementById('score-delta-container'),
+            answeredDisplay: document.getElementById('answered-display'),
+            networkIndicator: document.getElementById('network-indicator'),
+            networkStatusText: document.getElementById('network-status-text'),
+            queueStatus: document.getElementById('queue-status'),
+            loadingState: document.getElementById('loading-state'),
+            loadingMessage: document.getElementById('loading-message'),
+            errorState: document.getElementById('error-state'),
+            errorDetails: document.getElementById('error-details'),
+            retryFetchBtn: document.getElementById('retry-fetch-btn'),
+            questionContent: document.getElementById('question-content'),
+            questionCategory: document.getElementById('question-category'),
+            questionSourceBadge: document.getElementById('question-source-badge'),
+            timerBadge: document.getElementById('timer-badge'),
+            timerSeconds: document.getElementById('timer-seconds'),
+            timerProgressBar: document.getElementById('timer-progress-bar'),
+            questionText: document.getElementById('question-text'),
+            optionsGrid: document.getElementById('options-grid'),
+            activeActionsBar: document.getElementById('active-actions-bar'),
+            skipQuestionBtn: document.getElementById('skip-question-btn'),
+            feedbackBar: document.getElementById('feedback-bar'),
+            feedbackText: document.getElementById('feedback-text'),
+            nextQuestionBtn: document.getElementById('next-question-btn'),
+            openResetModalBtn: document.getElementById('open-reset-modal-btn'),
+            resetModal: document.getElementById('reset-modal'),
+            cancelResetBtn: document.getElementById('cancel-reset-btn'),
+            confirmResetBtn: document.getElementById('confirm-reset-btn')
+        };
+
+        /**
+         * Настройка интеграции с Telegram Mini App:
+         * развертывание на весь экран, адаптация цветов, профиль игрока и тактильный отклик.
+         */
+        function initTelegramMiniApp() {
+            if (!tg) return;
+
+            try {
+                tg.ready();
+                tg.expand();
+
+                // Настройка цветов шапки и фона в темном стиле приложения
+                if (typeof tg.setHeaderColor === 'function') {
+                    tg.setHeaderColor('#090d16');
                 }
-            }).catch(err => {
-                console.error('Ошибка копирования: ', err);
+                if (typeof tg.setBackgroundColor === 'function') {
+                    tg.setBackgroundColor('#090d16');
+                }
+
+                // Применение параметров темы Telegram при наличии
+                const tp = tg.themeParams || {};
+                if (tp.bg_color && isDarkColor(tp.bg_color)) {
+                    document.documentElement.style.setProperty('--tg-bg', tp.bg_color);
+                }
+                if (tp.button_color) {
+                    document.documentElement.style.setProperty('--tg-button', tp.button_color);
+                }
+
+                // Отслеживание стабильной высоты области просмотра
+                const updateViewportHeight = () => {
+                    if (tg.viewportStableHeight) {
+                        document.documentElement.style.setProperty('--tg-viewport-stable-height', `${tg.viewportStableHeight}px`);
+                    }
+                };
+                updateViewportHeight();
+                tg.onEvent('viewportChanged', updateViewportHeight);
+
+                // Отображение имени или username пользователя Telegram
+                const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+                if (user) {
+                    const displayName = user.first_name
+                        ? (user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name)
+                        : (user.username ? `@${user.username}` : 'Игрок Telegram');
+                    els.playerTitle.textContent = displayName;
+                }
+
+                if (tg.CloudStorage) {
+                    els.storageBadge.textContent = 'Прогресс и уникальность синхронизированы с Telegram Cloud';
+                }
+            } catch (err) {
+                console.warn('Ошибка инициализации Telegram WebApp:', err);
+            }
+        }
+
+        function isDarkColor(hex) {
+            if (!hex || !hex.startsWith('#')) return true;
+            const c = hex.substring(1);
+            const rgb = parseInt(c.length === 3 ? c.split('').map(x => x + x).join('') : c, 16);
+            const r = (rgb >> 16) & 0xff;
+            const g = (rgb >> 8) & 0xff;
+            const b = (rgb >> 0) & 0xff;
+            const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            return luma < 95;
+        }
+
+        /**
+         * Нативный тактильный отклик Telegram (HapticFeedback)
+         */
+        function triggerHaptic(type) {
+            if (!tg || !tg.HapticFeedback) return;
+            try {
+                if (type === 'success') {
+                    tg.HapticFeedback.notificationOccurred('success');
+                } else if (type === 'error') {
+                    tg.HapticFeedback.notificationOccurred('error');
+                } else if (type === 'warning') {
+                    tg.HapticFeedback.notificationOccurred('warning');
+                } else if (type === 'light') {
+                    tg.HapticFeedback.impactOccurred('light');
+                }
+            } catch (e) {
+                // Игнорируем на неподдерживаемых клиентах
+            }
+        }
+// ... existing code ...
+        function hashQuestion(questionText) {
+            const normalized = normalizeText(questionText);
+            let hash = 5381;
+            for (let i = 0; i < normalized.length; i++) {
+                hash = ((hash << 5) + hash) + normalized.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return 'q_' + Math.abs(hash).toString(36) + '_' + normalized.length;
+        }
+
+        /**
+         * Загрузка прогресса из localStorage и синхронизация с Telegram CloudStorage
+         */
+        function loadStateFromStorage() {
+            try {
+                const savedScore = localStorage.getItem(STORAGE_KEYS.SCORE);
+                if (savedScore !== null) state.score = parseInt(savedScore, 10) || 0;
+
+                const savedAnswered = localStorage.getItem(STORAGE_KEYS.ANSWERED_COUNT);
+                if (savedAnswered !== null) state.answeredCount = parseInt(savedAnswered, 10) || 0;
+
+                const savedHashes = localStorage.getItem(STORAGE_KEYS.ASKED_HASHES);
+                if (savedHashes) {
+                    const parsedHashes = JSON.parse(savedHashes);
+                    if (Array.isArray(parsedHashes)) {
+                        state.askedHashes = new Set(parsedHashes);
+                    }
+                }
+
+                const savedTitles = localStorage.getItem(STORAGE_KEYS.ASKED_TITLES);
+                if (savedTitles) {
+                    const parsedTitles = JSON.parse(savedTitles);
+                    if (Array.isArray(parsedTitles)) {
+                        state.askedTitles = parsedTitles;
+                    }
+                }
+
+                const savedQueue = localStorage.getItem(STORAGE_KEYS.QUESTION_QUEUE);
+                if (savedQueue) {
+                    const parsedQueue = JSON.parse(savedQueue);
+                    if (Array.isArray(parsedQueue)) {
+                        state.queue = parsedQueue.filter(q => !state.askedHashes.has(hashQuestion(q.question)));
+                    }
+                }
+            } catch (e) {
+                console.warn('Не удалось прочитать состояние из localStorage:', e);
+            }
+        }
+
+        /**
+         * Асинхронная подгрузка истории из Telegram CloudStorage (чтобы вопросы не повторялись на разных устройствах)
+         */
+        function syncFromTelegramCloudStorage() {
+            return new Promise((resolve) => {
+                if (!tg || !tg.CloudStorage) {
+                    resolve();
+                    return;
+                }
+                try {
+                    tg.CloudStorage.getItems(
+                        [STORAGE_KEYS.SCORE, STORAGE_KEYS.ANSWERED_COUNT, STORAGE_KEYS.ASKED_HASHES],
+                        (err, values) => {
+                            if (!err && values) {
+                                if (values[STORAGE_KEYS.ASKED_HASHES]) {
+                                    try {
+                                        const cloudHashes = JSON.parse(values[STORAGE_KEYS.ASKED_HASHES]);
+                                        if (Array.isArray(cloudHashes)) {
+                                            cloudHashes.forEach(h => state.askedHashes.add(h));
+                                        }
+                                    } catch (e) {}
+                                }
+                                if (values[STORAGE_KEYS.ANSWERED_COUNT]) {
+                                    const cloudAns = parseInt(values[STORAGE_KEYS.ANSWERED_COUNT], 10) || 0;
+                                    if (cloudAns > state.answeredCount) {
+                                        state.answeredCount = cloudAns;
+                                        if (values[STORAGE_KEYS.SCORE] !== undefined && values[STORAGE_KEYS.SCORE] !== '') {
+                                            state.score = parseInt(values[STORAGE_KEYS.SCORE], 10) || 0;
+                                        }
+                                    }
+                                }
+                                state.queue = state.queue.filter(q => !state.askedHashes.has(hashQuestion(q.question)));
+                                saveStateToStorage(false);
+                                updateStatsUI(0);
+                            }
+                            resolve();
+                        }
+                    );
+                } catch (e) {
+                    resolve();
+                }
             });
         }
+
+        function saveStateToStorage(syncCloud = true) {
+            try {
+                const hashesArray = Array.from(state.askedHashes);
+                localStorage.setItem(STORAGE_KEYS.SCORE, String(state.score));
+                localStorage.setItem(STORAGE_KEYS.ANSWERED_COUNT, String(state.answeredCount));
+                localStorage.setItem(STORAGE_KEYS.ASKED_HASHES, JSON.stringify(hashesArray));
+                localStorage.setItem(STORAGE_KEYS.ASKED_TITLES, JSON.stringify(state.askedTitles.slice(-120)));
+                localStorage.setItem(STORAGE_KEYS.QUESTION_QUEUE, JSON.stringify(state.queue));
+
+                // Дублирование ключевых данных в Telegram CloudStorage (лимит 4096 байт на значение)
+                if (syncCloud && tg && tg.CloudStorage) {
+                    tg.CloudStorage.setItem(STORAGE_KEYS.SCORE, String(state.score));
+                    tg.CloudStorage.setItem(STORAGE_KEYS.ANSWERED_COUNT, String(state.answeredCount));
+                    // Сохраняем последние 220 хешей в пределах лимита 4 КБ CloudStorage
+                    const cloudHashesSlice = hashesArray.slice(-220);
+                    tg.CloudStorage.setItem(STORAGE_KEYS.ASKED_HASHES, JSON.stringify(cloudHashesSlice));
+                }
+            } catch (e) {
+                console.warn('Ошибка сохранения состояния:', e);
+            }
+        }
+
+        /**
+         * Обновление интерфейса статистики с анимацией изменения счета (+1 / -1 / -2)
+         */
+        function updateStatsUI(delta = 0, badgeStyle = 'auto') {
+            els.scoreDisplay.textContent = state.score;
+            els.answeredDisplay.textContent = state.answeredCount;
+
+            els.scoreDisplay.classList.remove('text-emerald-400', 'text-rose-400', 'text-white');
+            if (state.score > 0) {
+                els.scoreDisplay.classList.add('text-emerald-400');
+            } else if (state.score < 0) {
+                els.scoreDisplay.classList.add('text-rose-400');
+            } else {
+                els.scoreDisplay.classList.add('text-white');
+            }
+
+            if (delta !== 0) {
+                const badge = document.createElement('span');
+                badge.textContent = delta > 0 ? `+${delta}` : `${delta}`;
+                let colorClass = 'bg-rose-500 text-white';
+                if (delta > 0 || badgeStyle === 'success') {
+                    colorClass = 'bg-emerald-500 text-slate-950';
+                } else if (badgeStyle === 'warning') {
+                    colorClass = 'bg-amber-500 text-slate-950';
+                }
+                badge.className = `inline-block text-xs font-extrabold px-2 py-0.5 rounded-full shadow-md animate-float-up ${colorClass}`;
+                els.scoreDeltaContainer.innerHTML = '';
+                els.scoreDeltaContainer.appendChild(badge);
+            }
+        }
+// ... existing code ...
+        /**
+         * Обработка выбора ответа пользователем:
+         * +1 балл за верный ответ, -2 балла за неверный ответ
+         */
+        function handleAnswerSelection(selectedBtn, selectedOption) {
+            if (state.isAnswered || !state.currentQuestion) return;
+            state.isAnswered = true;
+            stopQuestionTimer();
+            els.activeActionsBar.classList.add('hidden');
+
+            const correctOption = state.currentQuestion.correctAnswer;
+            const isCorrect = selectedOption === correctOption;
+            const delta = isCorrect ? CORRECT_POINTS : WRONG_ANSWER_PENALTY;
+
+            triggerHaptic(isCorrect ? 'success' : 'error');
+
+            state.score += delta;
+            state.answeredCount += 1;
+            saveStateToStorage();
+            updateStatsUI(delta, isCorrect ? 'success' : 'error');
+
+            // Блокируем все кнопки и подсвечиваем результат
+            const allButtons = els.optionsGrid.querySelectorAll('button');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                const opt = btn.dataset.option;
+                const badge = btn.querySelector('span:first-child');
+
+                if (opt === correctOption) {
+                    btn.classList.remove('bg-slate-800/50', 'border-slate-700/80', 'text-slate-100');
+                    btn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-100', 'shadow-lg', 'shadow-emerald-950/40');
+                    if (badge) {
+                        badge.classList.remove('bg-slate-900/90', 'border-slate-700/80', 'text-slate-400');
+                        badge.classList.add('bg-emerald-500', 'border-emerald-400', 'text-slate-950');
+                    }
+                } else if (btn === selectedBtn && !isCorrect) {
+                    btn.classList.remove('bg-slate-800/50', 'border-slate-700/80', 'text-slate-100');
+                    btn.classList.add('bg-rose-500/20', 'border-rose-500', 'text-rose-100', 'shadow-lg', 'shadow-rose-950/40');
+                    if (badge) {
+                        badge.classList.remove('bg-slate-900/90', 'border-slate-700/80', 'text-slate-400');
+                        badge.classList.add('bg-rose-500', 'border-rose-400', 'text-white');
+                    }
+                } else {
+                    btn.classList.add('opacity-45');
+                }
+            });
+
+            // Вывод пояснения и статуса
+            const statusPrefix = isCorrect
+                ? '<span class="text-emerald-400 font-bold">Верно (+1 балл).</span> '
+                : '<span class="text-rose-400 font-bold">Неверно (-2 балла).</span> ';
+            const explanation = state.currentQuestion.explanation
+                ? `<span class="text-slate-300">${state.currentQuestion.explanation}</span>`
+                : `<span class="text-slate-400">Правильный ответ: ${correctOption}</span>`;
+
+            els.feedbackText.innerHTML = statusPrefix + explanation;
+            els.feedbackBar.classList.remove('hidden');
+        }
+
+        /**
+         * Обработка истечения 10 секунд на ответ:
+         * списывается -1 балл и подсвечивается правильный ответ
+         */
+        function handleTimeExpired() {
+            if (state.isAnswered || !state.currentQuestion) return;
+            state.isAnswered = true;
+            stopQuestionTimer();
+            els.activeActionsBar.classList.add('hidden');
+
+            triggerHaptic('warning');
+
+            const correctOption = state.currentQuestion.correctAnswer;
+            const delta = TIMEOUT_PENALTY;
+
+            state.score += delta;
+            state.answeredCount += 1;
+            saveStateToStorage();
+            updateStatsUI(delta, 'warning');
+
+            const allButtons = els.optionsGrid.querySelectorAll('button');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                const opt = btn.dataset.option;
+                const badge = btn.querySelector('span:first-child');
+
+                if (opt === correctOption) {
+                    btn.classList.remove('bg-slate-800/50', 'border-slate-700/80', 'text-slate-100');
+                    btn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-100', 'shadow-lg', 'shadow-emerald-950/40');
+                    if (badge) {
+                        badge.classList.remove('bg-slate-900/90', 'border-slate-700/80', 'text-slate-400');
+                        badge.classList.add('bg-emerald-500', 'border-emerald-400', 'text-slate-950');
+                    }
+                } else {
+                    btn.classList.add('opacity-45');
+                }
+            });
+
+            const statusPrefix = '<span class="text-amber-400 font-bold">Время вышло! -1 балл.</span> ';
+            const explanation = state.currentQuestion.explanation
+                ? `<span class="text-slate-300">${state.currentQuestion.explanation}</span>`
+                : `<span class="text-slate-400">Правильный ответ: ${correctOption}</span>`;
+
+            els.feedbackText.innerHTML = statusPrefix + explanation;
+            els.feedbackBar.classList.remove('hidden');
+        }
+
+        /**
+         * Ручной пропуск текущего вопроса до истечения таймера:
+         * списывается -1 балл, вопрос остаётся в истории (не повторится) и сразу загружается следующий
+         */
+        function handleSkipQuestion() {
+            if (state.isAnswered || !state.currentQuestion) return;
+            state.isAnswered = true;
+            stopQuestionTimer();
+            els.skipQuestionBtn.disabled = true;
+
+            triggerHaptic('light');
+
+            const delta = SKIP_PENALTY;
+            state.score += delta;
+            state.answeredCount += 1;
+            saveStateToStorage();
+            updateStatsUI(delta, 'warning');
+
+            loadNextQuestion();
+        }
+
+        /**
+         * Полный сброс истории и счета по желанию пользователя
+         */
+        function resetAllProgress() {
+            stopQuestionTimer();
+            triggerHaptic('light');
+
+            localStorage.removeItem(STORAGE_KEYS.SCORE);
+            localStorage.removeItem(STORAGE_KEYS.ANSWERED_COUNT);
+            localStorage.removeItem(STORAGE_KEYS.ASKED_HASHES);
+            localStorage.removeItem(STORAGE_KEYS.ASKED_TITLES);
+            localStorage.removeItem(STORAGE_KEYS.QUESTION_QUEUE);
+
+            if (tg && tg.CloudStorage) {
+                try {
+                    tg.CloudStorage.removeItems([
+                        STORAGE_KEYS.SCORE,
+                        STORAGE_KEYS.ANSWERED_COUNT,
+                        STORAGE_KEYS.ASKED_HASHES
+                    ]);
+                } catch (e) {}
+            }
+
+            state.score = 0;
+            state.answeredCount = 0;
+            state.askedHashes.clear();
+            state.askedTitles = [];
+            state.queue = [];
+            state.currentQuestion = null;
+            state.isAnswered = false;
+
+            els.scoreDeltaContainer.innerHTML = '';
+            updateStatsUI(0);
+            els.resetModal.classList.add('hidden');
+            loadNextQuestion();
+        }
+
+        // Привязка обработчиков событий
+        els.skipQuestionBtn.addEventListener('click', handleSkipQuestion);
+        els.nextQuestionBtn.addEventListener('click', () => {
+            triggerHaptic('light');
+            loadNextQuestion();
+        });
+        els.retryFetchBtn.addEventListener('click', () => {
+            triggerHaptic('light');
+            loadNextQuestion();
+        });
+// ... existing code ...
+        // Инициализация приложения при загрузке
+        window.addEventListener('DOMContentLoaded', async () => {
+            initTelegramMiniApp();
+            loadStateFromStorage();
+            updateStatsUI(0);
+            await syncFromTelegramCloudStorage();
+            loadNextQuestion();
+        });
     </script>
 </body>
 </html>
+```
